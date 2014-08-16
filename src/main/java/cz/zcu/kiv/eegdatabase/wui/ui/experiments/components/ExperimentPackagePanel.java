@@ -38,10 +38,14 @@ import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ExperimentsDetailPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ExperimentsDownloadPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ListExperimentsDataProvider;
 import cz.zcu.kiv.eegdatabase.wui.ui.licenses.LicenseRequestPage;
+import cz.zcu.kiv.eegdatabase.wui.ui.licenses.components.ViewLicensePanel;
 import cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart.BuyLinkPanel;
 import cz.zcu.kiv.eegdatabase.wui.ui.signalProcessing.MethodListPage;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.CloseButtonCallback;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
@@ -105,6 +109,10 @@ public class ExperimentPackagePanel extends Panel {
 
 	private boolean hasLicense = true;
 
+    private ModalWindow viewLicenseWindow;
+
+    private AjaxLink<License> viewLicenseLink;
+
     /**
      *
      * @param id component id
@@ -166,6 +174,14 @@ public class ExperimentPackagePanel extends Panel {
 	 * @param cont container to add the list to
 	 */
 	private void addLicenseList(WebMarkupContainer cont ) {
+
+        viewLicenseWindow = new ModalWindow("viewLicenseWindow");
+        viewLicenseWindow.setAutoSize(true);
+        viewLicenseWindow.setResizable(false);
+        viewLicenseWindow.setMinimalWidth(600);
+        viewLicenseWindow.setWidthUnit("px");
+        add(viewLicenseWindow);
+	    
 		licenses = new LoadableDetachableModel<List<License>>() {
 
 			@Override
@@ -196,6 +212,7 @@ public class ExperimentPackagePanel extends Panel {
 
 
 				target.add(licenseBuyLink);
+				target.add(viewLicenseLink);
 			}
 
 		};
@@ -220,9 +237,30 @@ public class ExperimentPackagePanel extends Panel {
 
 		};
 		licenseBuyLink.setOutputMarkupPlaceholderTag(true);
+		
+        viewLicenseWindow.setContent(new ViewLicensePanel(viewLicenseWindow.getContentId(), licenseModel));
+        viewLicenseWindow.setTitle(ResourceUtils.getModel("dataTable.heading.licenseTitle"));
+        viewLicenseLink = new AjaxLink<License>("viewLicenseLink", licenseModel) {
 
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                viewLicenseWindow.show(target);
+            }
+
+            @Override
+            protected void onConfigure() {
+                super.onConfigure();
+                this.setVisible(licenseModel.getObject() != null);
+            }
+
+        };
+        viewLicenseLink.setOutputMarkupPlaceholderTag(true);
+		
 		cont.add(ddc);
 		cont.add(licenseBuyLink);
+		cont.add(viewLicenseLink);
 	}
 
 
