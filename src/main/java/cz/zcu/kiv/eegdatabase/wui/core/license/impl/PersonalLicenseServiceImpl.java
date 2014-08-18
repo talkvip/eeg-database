@@ -80,6 +80,7 @@ public class PersonalLicenseServiceImpl extends GenericServiceImpl<PersonalLicen
 	public void createRequestForLicense(PersonalLicense personalLicense) {
 		personalLicense.setConfirmedDate(null);
 		personalLicense.setRequestedDate(new Date());
+		personalLicense.setLicenseState(PersonalLicenseState.APPLICATION);
 		this.personalLicenseDao.create(personalLicense);
 		
 		this.mailService.sendLicenseRequestToApplicantEmail(personalLicense.getEmail(), personalLicense.getLicense().getTitle());
