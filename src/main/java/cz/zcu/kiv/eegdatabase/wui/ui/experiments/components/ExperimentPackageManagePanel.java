@@ -42,6 +42,8 @@ import org.apache.wicket.extensions.model.AbstractCheckBoxModel;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
+import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -53,6 +55,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.hibernate.Hibernate;
+import org.hibernate.SessionFactory;
 
 import cz.zcu.kiv.eegdatabase.data.pojo.Experiment;
 import cz.zcu.kiv.eegdatabase.data.pojo.ExperimentPackage;
@@ -353,6 +357,16 @@ public class ExperimentPackageManagePanel extends Panel {
 			@Override
 			protected void onSubmitAction(IModel<License> model, AjaxRequestTarget target, Form<?> form) {
 				License obj = model.getObject();
+				
+				FileUploadField fileUploadField = this.getFileUpload();
+				FileUpload uploadedFile = fileUploadField.getFileUpload();
+				
+                if (uploadedFile != null) {
+                    obj.setAttachmentFileName(uploadedFile.getClientFileName());
+                    // TODO change this depraceted method.
+                    obj.setAttachmentContent(Hibernate.createBlob(uploadedFile.getBytes()));
+                }
+				
 				if (obj.getLicenseId() == 0) {
 					if(selectedBlueprintModel.getObject() != null && !obj.getTitle().equals(selectedBlueprintModel.getObject().getTitle())) {
 						obj.setTemplate(true);

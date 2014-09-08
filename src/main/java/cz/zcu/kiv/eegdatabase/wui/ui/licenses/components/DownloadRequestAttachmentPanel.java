@@ -27,41 +27,37 @@
  */
 package cz.zcu.kiv.eegdatabase.wui.ui.licenses.components;
 
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.ByteArrayResource;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import cz.zcu.kiv.eegdatabase.data.pojo.PersonalLicense;
+import cz.zcu.kiv.eegdatabase.wui.core.license.LicenseFacade;
 
 /**
- * Panel with confirm link for the table (or any repeater) of PersonalLicense objects.
- * 
- * The link confirms the license request.
+ * Panel with download link for download attachment in request.
  * 
  * @author Jakub Danek
  */
 public class DownloadRequestAttachmentPanel extends Panel {
 
     private static final long serialVersionUID = -3929422353082732773L;
+    
+    @SpringBean
+    private LicenseFacade facade;
 
-    public DownloadRequestAttachmentPanel(String id, IModel<PersonalLicense> request) {
+    public DownloadRequestAttachmentPanel(String id, IModel<PersonalLicense> model) {
         super(id);
 
-        boolean isContent = request.getObject() != null && request.getObject().getAttachmentContent() != null;
+        boolean isContent = model.getObject() != null && model.getObject().getAttachmentContent() != null;
         ByteArrayResource res;
         if (isContent) {
-            try {
-                res = new ByteArrayResource("", request.getObject().getAttachmentContent().getBytes(0, (int) request.getObject().getAttachmentContent().length()), request.getObject()
+                
+                byte[] attachmentContent = facade.getPersonalLicenseAttachmentContent(model.getObject().getPersonalLicenseId());
+                res = new ByteArrayResource("", attachmentContent, model.getObject()
                         .getAttachmentFileName());
-            } catch (SQLException ex) {
-                Logger.getLogger(ViewLicensePanel.class.getName()).log(Level.SEVERE, null, ex);
-                throw new RuntimeException(ex);
-            }
         } else {
             res = new ByteArrayResource("");
         }
