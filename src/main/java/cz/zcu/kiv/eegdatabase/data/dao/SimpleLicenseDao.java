@@ -28,6 +28,9 @@ package cz.zcu.kiv.eegdatabase.data.dao;
 
 import cz.zcu.kiv.eegdatabase.data.pojo.License;
 import cz.zcu.kiv.eegdatabase.data.pojo.LicenseType;
+import cz.zcu.kiv.eegdatabase.data.pojo.PersonalLicense;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,5 +65,17 @@ public class SimpleLicenseDao extends SimpleGenericDao<License, Integer> impleme
 
 		return this.getSession().createQuery(hqlQuery).setInteger("researchGroup", reseachGroupId).setParameterList("licenseType", licenseType).list();
 	}
+	
+	@Override
+    public byte[] getLicenseAttachmentContent(int licenseId) {
+        String query = "from License l where l.licenseId = :id";
+        License result =  (License) this.getSession().createQuery(query).setInteger("id", licenseId).uniqueResult();
+        try {
+            return result.getAttachmentContent().getBytes(1, (int) result.getAttachmentContent().length());
+        } catch (SQLException e) {
+            log.error(e.getMessage(), e);
+            return new byte[0];
+        }
+    }
     
 }

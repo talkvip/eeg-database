@@ -181,4 +181,8 @@ public interface LicenseFacade extends GenericFacade<License, Integer> {
 	 */
 	public List<License> getLicenseTemplates(ResearchGroup group);
 	
+	public byte[] getPersonalLicenseAttachmentContent(int personalLicenseId);
+	
+	public byte[] getLicenseAttachmentContent(int licenseId);
+	
 }

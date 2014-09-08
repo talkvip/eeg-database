@@ -24,8 +24,10 @@ package cz.zcu.kiv.eegdatabase.data.pojo;
 
 
 import java.io.Serializable;
+import java.sql.Blob;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.*;
 /**
  *
@@ -63,6 +65,13 @@ public class License implements Serializable{
 
 	@Column(name = "IS_TEMPLATE")
 	private boolean template;
+	
+	@Column(name = "ATTACHMENT_FILE_NAME")
+    private String attachmentFileName;
+    
+    @Lob
+    @Column(name = "ATTACHMENT_CONTENT")
+    private Blob attachmentContent;
 
 	public int getLicenseId() {
 		return licenseId;
@@ -126,6 +135,22 @@ public class License implements Serializable{
 	public void setExperimentPackageLicenses(Set<ExperimentPackageLicense> experimentPackageLicenses) {
 		this.experimentPackageLicenses = experimentPackageLicenses;
 	}
+	
+	public String getAttachmentFileName() {
+        return attachmentFileName;
+    }
+	
+	public void setAttachmentFileName(String attachmentFileName) {
+        this.attachmentFileName = attachmentFileName;
+    }
+	
+	public Blob getAttachmentContent() {
+        return attachmentContent;
+    }
+	
+	public void setAttachmentContent(Blob attachmentContent) {
+        this.attachmentContent = attachmentContent;
+    }
 
 	public boolean isTemplate() {
 		return template;

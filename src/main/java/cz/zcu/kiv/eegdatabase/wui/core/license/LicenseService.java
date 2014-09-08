@@ -96,4 +96,6 @@ public interface LicenseService extends GenericService<License, Integer> {
 	 * @return list of licenses saved as templates for new
 	 */
 	public List<License> getLicenseTemplates(ResearchGroup group);
+	
+	public byte[] getLicenseAttachmentContent(int licenseId);
 }

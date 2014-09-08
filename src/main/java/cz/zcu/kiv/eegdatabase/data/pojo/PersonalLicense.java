@@ -98,7 +98,6 @@ public class PersonalLicense implements Serializable {
     @Column(name = "ATTACHMENT_FILE_NAME")
     private String attachmentFileName;
 
-    @Basic(fetch = FetchType.LAZY)
     @Lob
     @Column(name = "ATTACHMENT_CONTENT")
     private Blob attachmentContent;

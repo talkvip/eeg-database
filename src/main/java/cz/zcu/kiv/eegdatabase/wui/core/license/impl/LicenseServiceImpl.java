@@ -152,4 +152,10 @@ public class LicenseServiceImpl extends GenericServiceImpl<License, Integer> imp
 		params.put("researchGroup.researchGroupId", group.getResearchGroupId());
 		return this.licenseDao.readByParameter(params);
 	}
+
+    @Override
+    @Transactional(readOnly=true)
+    public byte[] getLicenseAttachmentContent(int licenseId) {
+        return licenseDao.getLicenseAttachmentContent(licenseId);
+    }
 }

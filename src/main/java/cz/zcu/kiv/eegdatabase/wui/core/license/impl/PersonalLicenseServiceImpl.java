@@ -121,7 +121,14 @@ public class PersonalLicenseServiceImpl extends GenericServiceImpl<PersonalLicen
 	}
 
 	@Override
+	@Transactional(readOnly=true)
 	public List<License> getUsersLicenses(Person person) {
 		return this.personalLicenseDao.getUsersLicenses(person);
 	}
+
+    @Override
+    @Transactional(readOnly=true)
+    public byte[] getPersonalLicenseAttachmentContent(int personalLicenseId) {
+        return personalLicenseDao.getAttachmentContent(personalLicenseId);
+    }
 }
