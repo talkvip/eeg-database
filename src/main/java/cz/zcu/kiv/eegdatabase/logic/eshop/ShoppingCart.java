@@ -22,11 +22,14 @@
  ******************************************************************************/
 package cz.zcu.kiv.eegdatabase.logic.eshop;
 
-import cz.zcu.kiv.eegdatabase.data.pojo.Experiment;
-
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import cz.zcu.kiv.eegdatabase.data.pojo.Experiment;
+import cz.zcu.kiv.eegdatabase.data.pojo.Order;
+import cz.zcu.kiv.eegdatabase.data.pojo.OrderItem;
 
 /**
  * Object of ShoppingCart. Keeps track of experiments placed in an order, order's total price. Provides basic methods
@@ -35,32 +38,44 @@ import java.util.List;
  * Date: 4.3.2013
  */
 public class ShoppingCart implements Serializable {
-    /** Unified price of all experiments. For prototype purposes only. */
-    public static double EXPERIMENT_TEST_PRICE = 5.0;
-    private List<Experiment> order = new ArrayList<Experiment>();
+
+    private static final long serialVersionUID = 9082679939344208647L;
+    
+    private Order order;
+    
+    public ShoppingCart() {
+        
+        this.order = new Order();
+    }
 
     public List<Experiment> getOrder() {
-        return order;
+        
+        List<Experiment> list = new ArrayList<Experiment>();
+        
+        for(OrderItem item : order.getItems())
+            list.add(item.getExperiment());
+        
+        return list;
     }
 
     public double getTotalPrice(){
-        double total = 0.0;
-        for(Experiment experiment : order){
-            total += EXPERIMENT_TEST_PRICE;
+        BigDecimal total = BigDecimal.ZERO;
+        for(OrderItem item : order.getItems()){
+            total = total.add(item.getPrice());
         }
-        return total;
+        return total.doubleValue(); // TODO change double to bigdecimal
     }
 
     public void addToCart(Experiment experiment){
         // Each experiment can be put into cart only once.
         if(!isInCart(experiment)){
-            order.add(experiment);
+            order.getItems().add(new OrderItem(experiment));
         }
     }
 
     public boolean isInCart(Experiment experiment){
-        for(Experiment ex : order){
-            if(experiment.getExperimentId() == ex.getExperimentId()){
+        for(OrderItem ex : order.getItems()){
+            if(experiment.getExperimentId() == ex.getExperiment().getExperimentId()){
                 return true;
             }
         }
@@ -68,18 +83,18 @@ public class ShoppingCart implements Serializable {
     }
 
     public void removeFromCart(Experiment experiment){
-        for(int index = 0; index < order.size(); index++){
-            if(experiment.getExperimentId() == order.get(index).getExperimentId()){
-                order.remove(index);
+        for(int index = 0; index < order.getItems().size(); index++){
+            if(experiment.getExperimentId() == order.getItems().get(index).getExperiment().getExperimentId()){
+                order.getItems().remove(index);
             }
         }
     }
     public boolean isEmpty(){
-        return order.isEmpty();
+        return order.getItems().isEmpty();
     }
 
     public int size(){
-        return order.size();
+        return order.getItems().size();
     }
 
 
