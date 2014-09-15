@@ -18,37 +18,25 @@
  *  
  *  ***********************************************************************************************************************
  *  
- *   OrderDataProvider.java, 2013/10/02 00:01 Jakub Rinkes
+ *   OrderItemPanel.java, 2014/14/09 00:01 Jakub Rinkes
  ******************************************************************************/
 package cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart;
 
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
 
-import cz.zcu.kiv.eegdatabase.data.pojo.Order;
-import cz.zcu.kiv.eegdatabase.wui.app.session.EEGDataBaseSession;
-import cz.zcu.kiv.eegdatabase.wui.components.repeater.BasicDataProvider;
-import cz.zcu.kiv.eegdatabase.wui.core.order.OrderFacade;
+import cz.zcu.kiv.eegdatabase.data.pojo.OrderItem;
 
-public class OrderDataProvider extends BasicDataProvider<Order> {
+public class OrderItemPanel extends Panel {
 
-    private static final long serialVersionUID = 7294045302100220472L;
-    
-    private OrderFacade facade;
+    private static final long serialVersionUID = 1L;
 
-    public OrderDataProvider(OrderFacade facade){
-        super("date", SortOrder.ASCENDING);
-        this.facade = facade;
-        
-        int personId = EEGDataBaseSession.get().getLoggedUser().getPersonId();
-        
-        super.listModel.setObject(this.facade.getAllOrdersForPerson(personId));
+    public OrderItemPanel(String id, IModel<OrderItem> model) {
+        super(id, new CompoundPropertyModel<OrderItem>(model));
+
+        add(new Label("price"));
     }
-    
-    public OrderDataProvider(OrderFacade facade, int personId){
-        super("date", SortOrder.ASCENDING);
-        this.facade = facade;
-        
-        super.listModel.setObject(this.facade.getAllOrdersForPerson(personId));
-    }
-   
+
 }

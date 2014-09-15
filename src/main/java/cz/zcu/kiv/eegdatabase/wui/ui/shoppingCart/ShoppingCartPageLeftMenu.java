@@ -22,9 +22,10 @@
  ******************************************************************************/
 package cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart;
 
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+
 import cz.zcu.kiv.eegdatabase.wui.components.menu.button.IButtonPageMenu;
 import cz.zcu.kiv.eegdatabase.wui.components.page.MenuPage;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 /**
  * LeftMenu definition for ShoppingCart Page
@@ -34,7 +35,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 public enum ShoppingCartPageLeftMenu implements IButtonPageMenu {
 
     MY_CART(ShoppingCartPage.class, "pageTitle.myCart", null),
-    MY_DOWNLOADS(MyDownloadsPage.class, "pageTitle.myDownloads", null),
+    MY_ORDERS(ListOrderPage.class, "pageTitle.order.myOrders", null),
     ;
 
     private Class<? extends MenuPage> pageClass;

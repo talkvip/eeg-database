@@ -18,7 +18,7 @@ This file is part of the EEG-database project
  
  ***********************************************************************************************************************
  
-  MyDownloadsPage.html, 2013/10/02 00:01 Jakub Rinkes
+  OrderDetailPage.html, 2014/14/09 00:01 Jakub Rinkes
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
@@ -29,9 +29,40 @@ This file is part of the EEG-database project
     <div class="leftMenu" wicket:id="leftMenu"></div>
 
     <div class="mainContentWithMenu">
+    
         <h1 wicket:id="title"></h1>
-        <wicket:container wicket:id="youHaveJustBought"></wicket:container>
-        <table class="dataTable measurationListDataTable" wicket:id="list"></table>
+        
+        <table class="standardValueTable">
+            <tr>
+                <th><wicket:message key="label.order.id"></wicket:message>:</th>
+                <td wicket:id="id"></td>
+            </tr>
+            <tr>   
+                <th><wicket:message key="label.date"></wicket:message>:</th>
+                <td wicket:id="date"></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="label.person"></wicket:message>:</th>
+                <td wicket:id="person"></td>
+            </tr>
+            <tr>
+                <th><wicket:message key="label.order.price"></wicket:message>:</th>
+                <td wicket:id="orderPrice"></td>
+            </tr>
+        </table>
+        
+        <table class="dataTable">
+            <thead>
+                <tr>
+                    <td><wicket:message key="dataTable.heading.price"></wicket:message></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr wicket:id="items">
+                    <td wicket:id="item"></td>
+                </tr>
+            </tbody>
+        </table>
 
     </div>
 </wicket:extend>

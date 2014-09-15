@@ -104,7 +104,7 @@ public class PayPalConfirmPaymentPage extends MenuPage{
                     // Copies current order to match the purchased items. Security measure to ensure the user is given exactly what he paid for.
                     EEGDataBaseSession.get().setAttribute("order", (ArrayList) ((ArrayList) EEGDataBaseSession.get().getShoppingCart().getOrder()).clone());
                     EEGDataBaseSession.get().getShoppingCart().getOrder().clear();
-                    setResponsePage(MyDownloadsPage.class);
+                    setResponsePage(ListOrderPage.class);
                 }
                 else{
                     setResponsePage(PaymentErrorPage.class);

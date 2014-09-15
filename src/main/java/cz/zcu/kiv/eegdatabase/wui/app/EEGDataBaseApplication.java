@@ -131,6 +131,8 @@ import cz.zcu.kiv.eegdatabase.wui.ui.scenarios.form.ScenarioFormPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.scenarios.form.ScenarioSchemaFormPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.search.SearchPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.security.ConfirmPage;
+import cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart.OrderDetailPage;
+import cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart.ListOrderPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.welcome.WelcomePage;
 
 /**
@@ -299,6 +301,9 @@ public class EEGDataBaseApplication extends AuthenticatedWebApplication implemen
         mountPage("granted-licenses", GrantedLicensesPage.class);
         mountPage("manage-license-requests", ManageLicenseRequestsPage.class);
         mountPage("revoked-licenses", RevokedRequestPage.class);
+        
+        mountPackage("order-list", ListOrderPage.class);
+        mountPackage("order-view", OrderDetailPage.class);
 
         mountPage("elastic", Elastic.class);
     }
