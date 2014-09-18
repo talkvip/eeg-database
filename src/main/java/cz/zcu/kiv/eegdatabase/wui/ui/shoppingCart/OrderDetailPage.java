@@ -23,6 +23,8 @@
 package cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart;
 
 import org.apache.wicket.RestartResponseAtInterceptPageException;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -85,7 +87,20 @@ public class OrderDetailPage extends MenuPage {
 
             @Override
             protected void populateItem(ListItem<OrderItem> item) {
+
+                item.add(new Label("id", item.getModel().getObject().getId()));
                 item.add(new OrderItemPanel("item", item.getModel()));
+                item.add(new Label("price", item.getModel().getObject().getPrice()));
+                item.add(new AjaxLink<Void>("removeLink") {
+
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        // TODO add remove action
+                    }
+
+                });
             }
         };
 

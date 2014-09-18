@@ -54,12 +54,18 @@ This file is part of the EEG-database project
         <table class="dataTable">
             <thead>
                 <tr>
+                    <td><wicket:message key="dataTable.heading.number"></wicket:message></td>
+                    <td></td>
                     <td><wicket:message key="dataTable.heading.price"></wicket:message></td>
+                    <td></td>
                 </tr>
             </thead>
             <tbody>
                 <tr wicket:id="items">
+                    <td wicket:id="id"></td>
                     <td wicket:id="item"></td>
+                    <td wicket:id="price"></td>
+                    <td><a href="#" wicket:id="removeLink">X</a></td>
                 </tr>
             </tbody>
         </table>
