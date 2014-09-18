@@ -22,6 +22,12 @@
  ******************************************************************************/
 package cz.zcu.kiv.eegdatabase.wui.core.license.impl;
 
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+
 import cz.zcu.kiv.eegdatabase.data.dao.GenericDao;
 import cz.zcu.kiv.eegdatabase.data.dao.PersonalLicenseDao;
 import cz.zcu.kiv.eegdatabase.data.pojo.License;
@@ -31,11 +37,8 @@ import cz.zcu.kiv.eegdatabase.data.pojo.PersonalLicenseState;
 import cz.zcu.kiv.eegdatabase.data.pojo.ResearchGroup;
 import cz.zcu.kiv.eegdatabase.data.service.MailService;
 import cz.zcu.kiv.eegdatabase.wui.core.GenericServiceImpl;
+import cz.zcu.kiv.eegdatabase.wui.core.group.ResearchGroupFacade;
 import cz.zcu.kiv.eegdatabase.wui.core.license.PersonalLicenseService;
-import java.util.Date;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -45,6 +48,7 @@ public class PersonalLicenseServiceImpl extends GenericServiceImpl<PersonalLicen
 
 	private PersonalLicenseDao personalLicenseDao;
 	private MailService mailService;
+	private ResearchGroupFacade groupFacade;
 	
     public PersonalLicenseServiceImpl() {
     }
@@ -61,6 +65,11 @@ public class PersonalLicenseServiceImpl extends GenericServiceImpl<PersonalLicen
 	@Required
     public void setMailService(MailService mailService) {
 		this.mailService = mailService;
+    }
+	
+	@Required
+	public void setGroupFacade(ResearchGroupFacade groupFacade) {
+        this.groupFacade = groupFacade;
     }
 
 	@Override
@@ -83,9 +92,11 @@ public class PersonalLicenseServiceImpl extends GenericServiceImpl<PersonalLicen
 		personalLicense.setLicenseState(PersonalLicenseState.APPLICATION);
 		this.personalLicenseDao.create(personalLicense);
 		
+		ResearchGroup group = groupFacade.getResearchGroupById(personalLicense.getLicense().getResearchGroup().getResearchGroupId());
+		
 		this.mailService.sendLicenseRequestToApplicantEmail(personalLicense.getEmail(), personalLicense.getLicense().getTitle());
 		this.mailService.sendLicenseRequestToGroupEmail(
-				personalLicense.getLicense().getResearchGroup().getPerson().getEmail(),
+				group.getPerson().getEmail(),
 				personalLicense.getFirstName() + " " + personalLicense.getLastName(),
 				personalLicense.getEmail(),
 				personalLicense.getLicense().getTitle());
