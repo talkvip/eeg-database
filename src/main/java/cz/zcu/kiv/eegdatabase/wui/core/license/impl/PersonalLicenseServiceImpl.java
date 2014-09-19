@@ -96,7 +96,7 @@ public class PersonalLicenseServiceImpl extends GenericServiceImpl<PersonalLicen
 		
 		this.mailService.sendLicenseRequestToApplicantEmail(personalLicense.getEmail(), personalLicense.getLicense().getTitle());
 		this.mailService.sendLicenseRequestToGroupEmail(
-				group.getPerson().getEmail(),
+				group.getPerson().getUsername(),
 				personalLicense.getFirstName() + " " + personalLicense.getLastName(),
 				personalLicense.getEmail(),
 				personalLicense.getLicense().getTitle());
