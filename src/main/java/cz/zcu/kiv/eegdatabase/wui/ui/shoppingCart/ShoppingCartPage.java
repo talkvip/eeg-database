@@ -22,72 +22,87 @@
  ******************************************************************************/
 package cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart;
 
-import cz.zcu.kiv.eegdatabase.data.pojo.Experiment;
-import cz.zcu.kiv.eegdatabase.logic.eshop.PayPalTools;
-import cz.zcu.kiv.eegdatabase.wui.app.session.EEGDataBaseSession;
-import cz.zcu.kiv.eegdatabase.wui.components.menu.button.ButtonPageMenu;
-import cz.zcu.kiv.eegdatabase.wui.components.page.MenuPage;
-import cz.zcu.kiv.eegdatabase.wui.components.table.TimestampPropertyColumn;
-import cz.zcu.kiv.eegdatabase.wui.components.table.ViewLinkPanel;
-import cz.zcu.kiv.eegdatabase.wui.components.utils.ResourceUtils;
-import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ExperimentsDetailPage;
+import java.io.Serializable;
+
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.DefaultDataTable;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.markup.html.pages.RedirectPage;
-import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import cz.zcu.kiv.eegdatabase.data.pojo.OrderItem;
+import cz.zcu.kiv.eegdatabase.logic.eshop.PayPalTools;
+import cz.zcu.kiv.eegdatabase.logic.eshop.ShoppingCart;
+import cz.zcu.kiv.eegdatabase.wui.app.session.EEGDataBaseSession;
+import cz.zcu.kiv.eegdatabase.wui.components.menu.button.ButtonPageMenu;
+import cz.zcu.kiv.eegdatabase.wui.components.page.MenuPage;
+import cz.zcu.kiv.eegdatabase.wui.components.utils.ResourceUtils;
 
-/**
- * Shopping cart page for displaying current order's content. Allows user to remove experiments from his order and
- * checkout his order using PayPal ExpressCheckout services.
- * Might be extended in the future to offer more payment methods.
- * User: jfronek
- * Date: 4.3.2013
- */
 @AuthorizeInstantiation(value = { "ROLE_READER", "ROLE_USER", "ROLE_EXPERIMENTER", "ROLE_ADMIN" })
 public class ShoppingCartPage extends MenuPage {
 
-    private static final int ITEMS_PER_PAGE = 20;
+    private static final long serialVersionUID = 1L;
 
-    public ShoppingCartPage(){
+    public ShoppingCartPage() {
         setupComponents();
     }
 
-    private void setupComponents(){
+    private void setupComponents() {
+
         IModel<String> title = ResourceUtils.getModel("pageTitle.myCart");
         add(new Label("title", title));
         setPageTitle(title);
-
         add(new ButtonPageMenu("leftMenu", ShoppingCartPageLeftMenu.values()));
 
-        add(new Label("emptyCart", ResourceUtils.getModel("text.emptyCart")){
+        final ShoppingCart shoppingCart = EEGDataBaseSession.get().getShoppingCart();
+
+        // empty cart
+        add(new Label("emptyCart", ResourceUtils.getModel("text.emptyCart")) {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
-            public boolean isVisible(){
-                return EEGDataBaseSession.get().getShoppingCart().isEmpty();
+            public boolean isVisible() {
+                return shoppingCart.isEmpty();
             }
         });
 
-        DefaultDataTable<Experiment, String> list = new DefaultDataTable<Experiment, String>("list", createListColumns(),
-                new CartDataProvider(), ITEMS_PER_PAGE);
-        add(list);
+        PropertyListView<OrderItem> items = new PropertyListView<OrderItem>("items", shoppingCart.getOrder().getItems()) {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void populateItem(ListItem<OrderItem> item) {
+
+                item.add(new Label("id", item.getModel().getObject().getId()));
+                item.add(new OrderItemPanel("item", item.getModel()));
+                item.add(new Label("price", item.getModel().getObject().getPrice()));
+                item.add(new RemoveLinkPanel("removeItemLink", item.getModel()));
+                
+            }
+            
+            @Override
+            public boolean isVisible() {
+                return !shoppingCart.isEmpty();
+            }
+        };
+        add(items);
 
         add(new Label("totalPriceMessage", ResourceUtils.getString("label.totalPrice") + " "));
-        add(new Label("totalPriceAmount", new Model(){
+        add(new Label("totalPriceAmount", new Model<Serializable>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
-            public Serializable getObject(){
-                String totalPrice =  "" + EEGDataBaseSession.get().getShoppingCart().getTotalPrice();
+            public Serializable getObject() {
+
+                String totalPrice = "" + shoppingCart.getTotalPrice();
                 return totalPrice;
             }
+
         }));
         add(new Label("totalPriceCurrency", " " + ResourceUtils.getString("currency.euro")));
 
@@ -97,46 +112,17 @@ public class ShoppingCartPage extends MenuPage {
 
             @Override
             public void onClick() {
-                if(!EEGDataBaseSession.get().getShoppingCart().isEmpty()){
+
+                if (!shoppingCart.isEmpty()) {
                     setResponsePage(new RedirectPage(PayPalTools.setExpressCheckout()));
-                }
-                //Partially fixes trouble with browser caching and back button
-                else {
+                } else {
+                    // Partially fixes trouble with browser caching and back button
                     setResponsePage(ShoppingCartPage.class);
                 }
 
             }
-        }.setVisibilityAllowed(!EEGDataBaseSession.get().getShoppingCart().isEmpty()));
+        }.setVisibilityAllowed(!shoppingCart.isEmpty()));
 
-    }
-
-    private List<? extends IColumn<Experiment, String>> createListColumns() {
-        List<IColumn<Experiment, String>> columns = new ArrayList<IColumn<Experiment, String>>();
-
-        columns.add(new PropertyColumn<Experiment, String>(ResourceUtils.getModel("dataTable.heading.number"), "experimentId", "experimentId"));
-        columns.add(new PropertyColumn<Experiment, String>(ResourceUtils.getModel("dataTable.heading.scenarioTitle"), "scenario.title", "scenario.title"));
-        columns.add(new PropertyColumn<Experiment, String>(ResourceUtils.getModel("dataTable.heading.date"), "startTime", "startTime"));
-        columns.add(new PropertyColumn<Experiment, String>(ResourceUtils.getModel("dataTable.heading.gender"), "personBySubjectPersonId.gender", "personBySubjectPersonId.gender"));
-        columns.add(new TimestampPropertyColumn<Experiment, String>(ResourceUtils.getModel("dataTable.heading.yearOfBirth"), "personBySubjectPersonId.dateOfBirth",
-                "personBySubjectPersonId.dateOfBirth", "yyyy"));
-
-        columns.add(new PropertyColumn<Experiment, String>(ResourceUtils.getModel("dataTable.heading.detail"), null, null) {
-            @Override
-            public void populateItem(Item<ICellPopulator<Experiment>> item, String componentId, IModel<Experiment> rowModel) {
-                item.add(new ViewLinkPanel(componentId, ExperimentsDetailPage.class, "experimentId", rowModel, ResourceUtils.getModel("link.detail")));
-            }
-        });
-
-        //Add to cart
-        columns.add(new PropertyColumn<Experiment, String>(ResourceUtils.getModel("dataTable.heading.remove"), null, null) {
-
-            @Override
-            public void populateItem(Item<ICellPopulator<Experiment>> item, String componentId, IModel<Experiment> rowModel) {
-                item.add(new RemoveLinkPanel(componentId, rowModel));
-            }
-        });
-        return columns;
     }
 
 }
-

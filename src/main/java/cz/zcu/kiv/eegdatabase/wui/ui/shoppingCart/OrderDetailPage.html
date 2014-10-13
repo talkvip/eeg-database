@@ -51,13 +51,12 @@ This file is part of the EEG-database project
             </tr>
         </table>
         
-        <table class="dataTable">
+        <table class="dataTable measurationListDataTable">
             <thead>
-                <tr>
-                    <td><wicket:message key="dataTable.heading.number"></wicket:message></td>
-                    <td></td>
-                    <td><wicket:message key="dataTable.heading.price"></wicket:message></td>
-                    <td></td>
+                <tr class="headers">
+                    <th><wicket:message key="dataTable.heading.number"></wicket:message></th>
+                    <th><wicket:message key="dataTable.heading.order.item"></wicket:message></th>
+                    <th><wicket:message key="dataTable.heading.price"></wicket:message></th>
                 </tr>
             </thead>
             <tbody>
@@ -65,7 +64,6 @@ This file is part of the EEG-database project
                     <td wicket:id="id"></td>
                     <td wicket:id="item"></td>
                     <td wicket:id="price"></td>
-                    <td><a href="#" wicket:id="removeLink">X</a></td>
                 </tr>
             </tbody>
         </table>

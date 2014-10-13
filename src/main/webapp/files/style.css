@@ -616,3 +616,8 @@ li.comment li li li {
 	font-weight: bold;
 	color: #ff00ff;
 }
+
+.removeLinkShort {
+	font-weight: bold;
+	color: #ff0000;
+}

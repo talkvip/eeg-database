@@ -53,7 +53,6 @@ import cz.zcu.kiv.eegdatabase.wui.ui.home.HomePage;
 public class ListOrderPage extends MenuPage {
 
     private static final long serialVersionUID = -4812429463451519264L;
-
     private static final int ITEMS_PER_PAGE = 20;
 
     @SpringBean
@@ -108,6 +107,7 @@ public class ListOrderPage extends MenuPage {
     }
 
     private List<? extends IColumn<Order, String>> createListColumns() {
+        
         List<IColumn<Order, String>> columns = new ArrayList<IColumn<Order, String>>();
 
         columns.add(new PropertyColumn<Order, String>(ResourceUtils.getModel("dataTable.heading.id"), "id", "id"));
@@ -124,5 +124,6 @@ public class ListOrderPage extends MenuPage {
             }
         });
         return columns;
+        
     }
 }

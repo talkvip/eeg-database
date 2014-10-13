@@ -24,78 +24,103 @@ package cz.zcu.kiv.eegdatabase.logic.eshop;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 import cz.zcu.kiv.eegdatabase.data.pojo.Experiment;
+import cz.zcu.kiv.eegdatabase.data.pojo.ExperimentPackage;
 import cz.zcu.kiv.eegdatabase.data.pojo.Order;
 import cz.zcu.kiv.eegdatabase.data.pojo.OrderItem;
 
-/**
- * Object of ShoppingCart. Keeps track of experiments placed in an order, order's total price. Provides basic methods
- * for manipulation with its content - add/remove experiment.
- * User: jfronek
- * Date: 4.3.2013
- */
 public class ShoppingCart implements Serializable {
 
     private static final long serialVersionUID = 9082679939344208647L;
-    
+
     private Order order;
-    
+
     public ShoppingCart() {
-        
+
         this.order = new Order();
     }
 
-    public List<Experiment> getOrder() {
-        
-        List<Experiment> list = new ArrayList<Experiment>();
-        
-        for(OrderItem item : order.getItems())
-            list.add(item.getExperiment());
-        
-        return list;
+    public Order getOrder() {
+        return order;
     }
 
-    public double getTotalPrice(){
+    // never return null. Always return zero or something.
+    public BigDecimal getTotalPrice() {
+
         BigDecimal total = BigDecimal.ZERO;
-        for(OrderItem item : order.getItems()){
-            total = total.add(item.getPrice());
+
+        // TODO rounding should be set by global settings
+        total.round(new MathContext(2, RoundingMode.HALF_UP));
+
+        for (OrderItem item : order.getItems()) {
+            
+            // !!! add method for big decimal isn't null safe.
+            total = total.add(item.getPrice() != null ? item.getPrice() : BigDecimal.ZERO);
         }
-        return total.doubleValue(); // TODO change double to bigdecimal
+        
+        return total;
     }
 
-    public void addToCart(Experiment experiment){
-        // Each experiment can be put into cart only once.
-        if(!isInCart(experiment)){
+    public void addToCart(Experiment experiment) {
+
+        if (!isInCart(experiment)) {
             order.getItems().add(new OrderItem(experiment));
         }
     }
+    
+    public void addToCart(ExperimentPackage expPackage) {
 
-    public boolean isInCart(Experiment experiment){
-        for(OrderItem ex : order.getItems()){
-            if(experiment.getExperimentId() == ex.getExperiment().getExperimentId()){
+        if (!isInCart(expPackage)) {
+            order.getItems().add(new OrderItem(expPackage));
+        }
+    }
+
+    public boolean isInCart(Experiment experiment) {
+
+        for (OrderItem tmp : order.getItems()) {
+            
+            if (tmp.getExperiment() == null) {
+                continue;
+            } else if (tmp.getExperiment().getExperimentId() == experiment.getExperimentId()) {
                 return true;
+            } else {
+                return false;
             }
         }
+
         return false;
     }
 
-    public void removeFromCart(Experiment experiment){
-        for(int index = 0; index < order.getItems().size(); index++){
-            if(experiment.getExperimentId() == order.getItems().get(index).getExperiment().getExperimentId()){
-                order.getItems().remove(index);
+    public boolean isInCart(ExperimentPackage expPackage) {
+
+        for (OrderItem tmp : order.getItems()) {
+            
+            if (tmp.getExperimentPackage() == null) {
+                continue;
+            } else if (tmp.getExperimentPackage().getExperimentPackageId() == expPackage.getExperimentPackageId()) {
+                return true;
+            } else {
+                return false;
             }
         }
+
+        return false;
     }
-    public boolean isEmpty(){
+
+    public void removeFromCart(OrderItem item) {
+
+        order.getItems().remove(item);
+    }
+
+    public boolean isEmpty() {
         return order.getItems().isEmpty();
     }
 
-    public int size(){
+    public int size() {
         return order.getItems().size();
     }
-
 
 }
