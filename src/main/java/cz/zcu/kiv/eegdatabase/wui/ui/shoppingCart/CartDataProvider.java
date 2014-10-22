@@ -30,13 +30,12 @@ import cz.zcu.kiv.eegdatabase.wui.app.session.EEGDataBaseSession;
 import cz.zcu.kiv.eegdatabase.wui.components.repeater.BasicDataProvider;
 
 public class CartDataProvider extends BasicDataProvider<OrderItem> {
-    
-    private static final long serialVersionUID = -522604668938747907L;
-    
 
-    public CartDataProvider(){
+    private static final long serialVersionUID = -522604668938747907L;
+
+    public CartDataProvider() {
         super("id", SortOrder.ASCENDING);
-        
+
         Order order = EEGDataBaseSession.get().getShoppingCart().getOrder();
         super.listModel.setObject(order.getItems());
     }

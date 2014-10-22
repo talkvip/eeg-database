@@ -24,6 +24,8 @@ package cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart;
 
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -52,7 +54,8 @@ import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ExperimentsDetailPage;
 public class OrderItemPanel extends Panel {
 
     private static final long serialVersionUID = 1L;
-    
+    protected Log log = LogFactory.getLog(getClass());
+
     @SpringBean
     private ExperimentsFacade facade;
 
@@ -61,16 +64,16 @@ public class OrderItemPanel extends Panel {
 
     public OrderItemPanel(String id, final IModel<OrderItem> model) {
         super(id, new CompoundPropertyModel<OrderItem>(model));
-        
+
         showActionModel = ResourceUtils.getModel("action.show");
         hideActionModel = ResourceUtils.getModel("action.hide");
 
         final Experiment experiment = model.getObject().getExperiment();
         final ExperimentPackage experimentPackage = model.getObject().getExperimentPackage();
-        
+
         // prepare containers
-        WebMarkupContainer experimentContainer = new WebMarkupContainer("experiment"){
-            
+        WebMarkupContainer experimentContainer = new WebMarkupContainer("experiment") {
+
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -78,9 +81,9 @@ public class OrderItemPanel extends Panel {
                 return experiment != null;
             }
         };
-        
-        final WebMarkupContainer packageContainer = new WebMarkupContainer("package"){
-            
+
+        final WebMarkupContainer packageContainer = new WebMarkupContainer("package") {
+
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -88,12 +91,12 @@ public class OrderItemPanel extends Panel {
                 return experimentPackage != null;
             }
         };
-        
+
         // prepare texts for experiment container
         int experimentId;
         String scenarioTitle;
         String date;
-        if(experiment != null){
+        if (experiment != null) {
             experimentId = experiment.getExperimentId();
             scenarioTitle = experiment.getScenario().getTitle();
             date = new SimpleDateFormat(StringUtils.DATE_TIME_FORMAT_PATTER, EEGDataBaseSession.get().getLocale()).format((Date) experiment.getStartTime());
@@ -102,33 +105,33 @@ public class OrderItemPanel extends Panel {
             scenarioTitle = "";
             date = "";
         }
-        
+
         // add components for experiment container
         experimentContainer.add(new Label("experimentText1", ResourceUtils.getModel("text.order.item.experiment1", Integer.toString(experimentId), scenarioTitle)));
         experimentContainer.add(new Label("experimentText2", ResourceUtils.getModel("text.order.item.experiment2", date)));
         experimentContainer.add(new BookmarkablePageLink<Void>("detail", ExperimentsDetailPage.class, PageParametersUtils.getDefaultPageParameters(experimentId)));
-        
+
         // prepare texts for package container
         int packageId;
         String name;
         String group;
-        if(experimentPackage != null){
+        if (experimentPackage != null) {
             packageId = experimentPackage.getExperimentPackageId();
             name = experimentPackage.getName();
-            group = experimentPackage.getResearchGroup().getTitle();
+            group = experimentPackage.getResearchGroup() != null ? experimentPackage.getResearchGroup().getTitle() : "";
         } else {
             packageId = 0;
             name = "";
             group = "";
         }
-        
+
         // add components for package container
         packageContainer.add(new Label("packageText1", ResourceUtils.getModel("text.order.item.package1", Integer.toString(packageId), name)));
         packageContainer.add(new Label("packageText2", ResourceUtils.getModel("text.order.item.package2", group)));
-        
+
         // add component for list of experiments in package
         final PropertyListView<Experiment> packageExperimentList = new PropertyListView<Experiment>("experiments", facade.getExperimentsByPackage(packageId)) {
-            
+
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -139,7 +142,6 @@ public class OrderItemPanel extends Panel {
                 item.add(new BookmarkablePageLink<Void>("detail", ExperimentsDetailPage.class, PageParametersUtils.getDefaultPageParameters(item.getModelObject().getExperimentId())));
             }
         };
-        
 
         // add show hide link for list of experiments in package
         final Label showHideLinkLabel = new Label("showHideLinkLabel", showActionModel);
@@ -149,25 +151,26 @@ public class OrderItemPanel extends Panel {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                
+
                 packageExperimentList.setVisible(!packageExperimentList.isVisible());
-                if(packageExperimentList.isVisible())
+                if (packageExperimentList.isVisible())
                     showHideLinkLabel.setDefaultModel(hideActionModel);
                 else
                     showHideLinkLabel.setDefaultModel(showActionModel);
-                
+
                 target.add(packageContainer);
             }
         };
-        
+
         showHideLink.add(showHideLinkLabel);
         packageContainer.add(showHideLink);
         packageContainer.add(packageExperimentList);
         packageExperimentList.setVisible(false);
-        
+
         experimentContainer.setOutputMarkupId(true);
         packageContainer.setOutputMarkupId(true);
         add(experimentContainer, packageContainer);
+
     }
 
 }

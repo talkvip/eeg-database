@@ -18,36 +18,40 @@
  *  
  *  ***********************************************************************************************************************
  *  
- *   BuyLinkPanel.java, 2013/10/02 00:01 Jakub Rinkes
+ *   ExperimentBuyDownloadLinkPanel.java, 2014/13/10 00:01 Jakub Rinkes
  ******************************************************************************/
 package cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart;
 
-import cz.zcu.kiv.eegdatabase.data.pojo.Experiment;
-import cz.zcu.kiv.eegdatabase.wui.app.session.EEGDataBaseSession;
-import cz.zcu.kiv.eegdatabase.wui.components.utils.ResourceUtils;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 
-/**
- * A Panel with a link for adding an experiment into user's shopping cart.
- * User: jfronek
- * Date: 4.3.2013
- */
-public class BuyLinkPanel  extends Panel {
+import cz.zcu.kiv.eegdatabase.data.pojo.Experiment;
+import cz.zcu.kiv.eegdatabase.wui.app.session.EEGDataBaseSession;
+import cz.zcu.kiv.eegdatabase.wui.components.utils.PageParametersUtils;
+import cz.zcu.kiv.eegdatabase.wui.components.utils.ResourceUtils;
+import cz.zcu.kiv.eegdatabase.wui.core.order.OrderFacade;
+import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ExperimentsDownloadPage;
+
+public class ExperimentBuyDownloadLinkPanel extends Panel {
 
     private static final long serialVersionUID = 5458856518415845451L;
 
-    /**
-     * Constructor of BuyLinkPanel
-     * @param id - component id
-     * @param model - datamodel of related Experiment
-     */
-    public BuyLinkPanel(String id, IModel<Experiment> model) {
+    @SpringBean
+    private OrderFacade facade;
+
+    public ExperimentBuyDownloadLinkPanel(String id, IModel<Experiment> model) {
         super(id);
         final Experiment experiment = model.getObject();
-        add(new Link<Void>("link") {
+
+        boolean isDownloadVisible = EEGDataBaseSession.get().isExperimentPurchased(experiment.getExperimentId());
+        boolean inCart = EEGDataBaseSession.get().getShoppingCart().isInCart(experiment);
+        boolean isAddCartLinkVisible = !inCart && !isDownloadVisible;
+
+        add(new Link<Void>("addToCartLink") {
 
             private static final long serialVersionUID = 1L;
 
@@ -55,8 +59,15 @@ public class BuyLinkPanel  extends Panel {
             public void onClick() {
                 EEGDataBaseSession.get().getShoppingCart().addToCart(experiment);
             }
-        }.add(new Label("label", ResourceUtils.getModel("link.addToCart")))
-         .setVisibilityAllowed(!EEGDataBaseSession.get().getShoppingCart().isInCart(experiment)));
+        }.setVisibilityAllowed(isAddCartLinkVisible));
+
+        add(new Label("inCart", ResourceUtils.getModel("text.inCart")).setVisibilityAllowed(inCart));
+
         // "Add to Cart" links are rendered only for experiments that haven't been places in the cart yet.
+
+        BookmarkablePageLink<Void> downloadLink = new BookmarkablePageLink<Void>("downloadLink", ExperimentsDownloadPage.class, PageParametersUtils.getDefaultPageParameters(experiment
+                .getExperimentId()));
+        add(downloadLink.setVisibilityAllowed(isDownloadVisible));
+
     }
 }

@@ -39,7 +39,8 @@ import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ExperimentsDownloadPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ListExperimentsDataProvider;
 import cz.zcu.kiv.eegdatabase.wui.ui.licenses.LicenseRequestPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.licenses.components.ViewLicensePanel;
-import cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart.BuyLinkPanel;
+import cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart.ExperimentBuyDownloadLinkPanel;
+import cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart.ExperimentPackageBuyDownloadLinkPanel;
 import cz.zcu.kiv.eegdatabase.wui.ui.signalProcessing.MethodListPage;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -144,6 +145,7 @@ public class ExperimentPackagePanel extends Panel {
 
 		header.add(new Label("packageTitle", new PropertyModel(epModel, "name")));
 		header.add(new Label("researchGroupTitle", new PropertyModel(epModel, "researchGroup.title")));
+		header.add(new ExperimentPackageBuyDownloadLinkPanel("buyDownloadLinkPanel", epModel));
 
 		WebMarkupContainer licenseCont = new WebMarkupContainer("licensesCont") {
 
@@ -357,23 +359,12 @@ public class ExperimentPackagePanel extends Panel {
                 item.add(new ViewLinkPanel(componentId, ExperimentsDetailPage.class, "experimentId", rowModel, ResourceUtils.getModel("link.detail")));
             }
         });
-		if(ownedLicenses.size() > 0) {
-			columns.add(new PropertyColumn<Experiment, String>(ResourceUtils.getModel("dataTable.heading.download"), null, null) {
 
-				@Override
-				public void populateItem(Item<ICellPopulator<Experiment>> item, String componentId, IModel<Experiment> rowModel) {
-					item.add(new ViewLinkPanel(componentId, ExperimentsDownloadPage.class, "experimentId", rowModel, ResourceUtils.getModel("link.download")));
-				}
-
-			});
-		}
-
-        //Add to cart
         columns.add(new PropertyColumn<Experiment, String>(ResourceUtils.getModel("dataTable.heading.buy"), null, null) {
 
             @Override
             public void populateItem(Item<ICellPopulator<Experiment>> item, String componentId, IModel<Experiment> rowModel) {
-                item.add(new BuyLinkPanel(componentId, rowModel));
+                item.add(new ExperimentBuyDownloadLinkPanel(componentId, rowModel));
             }
         });
 

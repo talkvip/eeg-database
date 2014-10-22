@@ -67,7 +67,7 @@ public class OrderDetailPage extends MenuPage {
 
     private void setupComponents(int orderId) {
 
-        Order order = orderFacade.getOrderForDetail(orderId);
+        final Order order = orderFacade.getOrderForDetail(orderId);
 
         IModel<String> title = ResourceUtils.getModel("pageTitle.order.detail", order.getId());
         add(new Label("title", title));
@@ -89,11 +89,11 @@ public class OrderDetailPage extends MenuPage {
                 item.add(new Label("id", item.getModel().getObject().getId()));
                 item.add(new OrderItemPanel("item", item.getModel()));
                 item.add(new Label("price", item.getModel().getObject().getPrice()));
-                
             }
         };
 
         add(idLabel, date, priceLabel, person, items);
+
     }
 
 }

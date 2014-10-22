@@ -1,6 +1,7 @@
 package cz.zcu.kiv.eegdatabase.wui.core.order;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,5 +35,29 @@ public class OrderServiceImpl extends GenericServiceImpl<Order, Integer> impleme
     @Transactional
     public Order getOrderForDetail(int orderId) {
         return dao.getOrderForDetail(orderId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isExperimentPurchased(int experimentId, int personId) {
+        return dao.isExperimentPurchased(experimentId, personId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isExperimentPackagePurchased(int experimentPackageId, int personId) {
+        return dao.isExperimentPackagePurchased(experimentPackageId, personId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Set<Integer> getPurchasedExperimentId(int personId) {
+        return dao.getPurchasedExperimentId(personId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Set<Integer> getPurchasedExperimentPackageId(int personId) {
+        return dao.getPurchasedExperimentPackageId(personId);
     }
 }

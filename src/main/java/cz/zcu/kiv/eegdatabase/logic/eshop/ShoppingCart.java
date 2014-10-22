@@ -56,11 +56,11 @@ public class ShoppingCart implements Serializable {
         total.round(new MathContext(2, RoundingMode.HALF_UP));
 
         for (OrderItem item : order.getItems()) {
-            
+
             // !!! add method for big decimal isn't null safe.
             total = total.add(item.getPrice() != null ? item.getPrice() : BigDecimal.ZERO);
         }
-        
+
         return total;
     }
 
@@ -70,7 +70,7 @@ public class ShoppingCart implements Serializable {
             order.getItems().add(new OrderItem(experiment));
         }
     }
-    
+
     public void addToCart(ExperimentPackage expPackage) {
 
         if (!isInCart(expPackage)) {
@@ -81,7 +81,7 @@ public class ShoppingCart implements Serializable {
     public boolean isInCart(Experiment experiment) {
 
         for (OrderItem tmp : order.getItems()) {
-            
+
             if (tmp.getExperiment() == null) {
                 continue;
             } else if (tmp.getExperiment().getExperimentId() == experiment.getExperimentId()) {
@@ -97,7 +97,7 @@ public class ShoppingCart implements Serializable {
     public boolean isInCart(ExperimentPackage expPackage) {
 
         for (OrderItem tmp : order.getItems()) {
-            
+
             if (tmp.getExperimentPackage() == null) {
                 continue;
             } else if (tmp.getExperimentPackage().getExperimentPackageId() == expPackage.getExperimentPackageId()) {

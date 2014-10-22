@@ -32,23 +32,23 @@ import cz.zcu.kiv.eegdatabase.wui.core.order.OrderFacade;
 public class OrderDataProvider extends BasicDataProvider<Order> {
 
     private static final long serialVersionUID = 7294045302100220472L;
-    
+
     private OrderFacade facade;
 
-    public OrderDataProvider(OrderFacade facade){
+    public OrderDataProvider(OrderFacade facade) {
         super("date", SortOrder.ASCENDING);
         this.facade = facade;
-        
+
         int personId = EEGDataBaseSession.get().getLoggedUser().getPersonId();
-        
+
         super.listModel.setObject(this.facade.getAllOrdersForPerson(personId));
     }
-    
-    public OrderDataProvider(OrderFacade facade, int personId){
+
+    public OrderDataProvider(OrderFacade facade, int personId) {
         super("date", SortOrder.ASCENDING);
         this.facade = facade;
-        
+
         super.listModel.setObject(this.facade.getAllOrdersForPerson(personId));
     }
-   
+
 }

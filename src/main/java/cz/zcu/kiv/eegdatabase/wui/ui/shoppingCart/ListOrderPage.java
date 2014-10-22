@@ -107,7 +107,7 @@ public class ListOrderPage extends MenuPage {
     }
 
     private List<? extends IColumn<Order, String>> createListColumns() {
-        
+
         List<IColumn<Order, String>> columns = new ArrayList<IColumn<Order, String>>();
 
         columns.add(new PropertyColumn<Order, String>(ResourceUtils.getModel("dataTable.heading.id"), "id", "id"));
@@ -124,6 +124,6 @@ public class ListOrderPage extends MenuPage {
             }
         });
         return columns;
-        
+
     }
 }

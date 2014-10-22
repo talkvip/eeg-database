@@ -81,9 +81,9 @@ public class ShoppingCartPage extends MenuPage {
                 item.add(new OrderItemPanel("item", item.getModel()));
                 item.add(new Label("price", item.getModel().getObject().getPrice()));
                 item.add(new RemoveLinkPanel("removeItemLink", item.getModel()));
-                
+
             }
-            
+
             @Override
             public boolean isVisible() {
                 return !shoppingCart.isEmpty();
