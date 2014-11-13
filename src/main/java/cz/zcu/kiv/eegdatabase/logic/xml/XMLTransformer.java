@@ -74,8 +74,8 @@ public class XMLTransformer implements DataTransformer {
     MeasurationType measType = of.createMeasurationType();
     XMLMeasuration mea = new XMLMeasuration(measType);
     if (mc.isTimes()) {
-      mea.writeStartAndEndTime(meas.getEndTime().toString(),
-              meas.getStartTime().toString());
+      mea.writeStartAndEndTime(meas.getStartTime().toString(),
+              meas.getEndTime().toString());
       log.debug("Written start and end time: " + measType.getStartTime() + ", "
               + measType.getEndTime());
     }
