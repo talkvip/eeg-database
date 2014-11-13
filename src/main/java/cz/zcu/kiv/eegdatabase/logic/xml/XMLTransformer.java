@@ -28,18 +28,23 @@ package cz.zcu.kiv.eegdatabase.logic.xml;
 
 import cz.zcu.kiv.eegdatabase.data.pojo.*;
 import cz.zcu.kiv.eegdatabase.data.xmlObjects.*;
-import cz.zcu.kiv.eegdatabase.data.xmlObjects.ScenarioType;
 import cz.zcu.kiv.eegdatabase.logic.controller.experiment.MetadataCommand;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.ibm.icu.util.Calendar;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -117,9 +122,9 @@ public class XMLTransformer implements DataTransformer {
     measType.setEnvironmentNote(meas.getEnvironmentNote());
     }
     List<PersonType> perType = measType.getPerson();
-    writePerson(perType, meas.getPersonBySubjectPersonId(), measured, mc);
+    writePerson(perType, meas.getPersonBySubjectPersonId(), measured, mc, meas.getStartTime());
     for (Person person : meas.getPersons()) {
-      writePerson(perType, person, experimenter, mc);
+      writePerson(perType, person, experimenter, mc, null);
       log.debug("Written Person metadata: " + person);
     }
 
@@ -156,7 +161,7 @@ public class XMLTransformer implements DataTransformer {
   }
 
   protected void writePerson(List<PersonType> perType, Person per,
-          String position, MetadataCommand mc) {
+          String position, MetadataCommand mc, Timestamp scenarioStartTime) {
     if (per == null) {
       return;
     }
@@ -166,8 +171,23 @@ public class XMLTransformer implements DataTransformer {
     p.writeName(per.getGivenname(), per.getSurname());
     }
     if (mc.isBirth()) {
-        if (per.getDateOfBirth() != null) {
-            pert.setDateOfBirth(per.getDateOfBirth().toString());
+        if (per.getDateOfBirth() != null && scenarioStartTime != null) {
+            
+            Calendar toTime = Calendar.getInstance();
+            toTime.setTimeInMillis(scenarioStartTime.getTime());
+            
+            Calendar birthDate = Calendar.getInstance();
+            birthDate.setTimeInMillis(per.getDateOfBirth().getTime());
+            
+            int years = toTime.get(Calendar.YEAR) - birthDate.get(Calendar.YEAR);
+            int currMonth = toTime.get(Calendar.MONTH) + 1;
+            int birthMonth = birthDate.get(Calendar.MONTH) + 1;
+            int months = currMonth - birthMonth;
+            
+            if (months < 0)
+               years--;
+            
+            pert.setAge(Integer.toString(years));
         }
 
     }
