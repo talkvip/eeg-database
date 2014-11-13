@@ -35,6 +35,7 @@ import cz.zcu.kiv.eegdatabase.wui.components.page.UnderConstructPage;
 import cz.zcu.kiv.eegdatabase.wui.components.utils.PageParametersUtils;
 import cz.zcu.kiv.eegdatabase.wui.components.utils.ResourceUtils;
 import cz.zcu.kiv.eegdatabase.wui.core.order.OrderFacade;
+import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ExperimentsPackageDownloadPage;
 
 public class ExperimentPackageBuyDownloadLinkPanel extends Panel {
 
@@ -65,7 +66,7 @@ public class ExperimentPackageBuyDownloadLinkPanel extends Panel {
         // "Add to Cart" links are rendered only for experiments that haven't been places in the cart yet.
 
         BookmarkablePageLink<Void> downloadLink = new BookmarkablePageLink<Void>("downloadLink",
-                UnderConstructPage.class,
+                ExperimentsPackageDownloadPage.class,
                 PageParametersUtils.getDefaultPageParameters(experimentPck.getExperimentPackageId()));
         add(downloadLink.setVisibilityAllowed(isDownloadVisible));
 
