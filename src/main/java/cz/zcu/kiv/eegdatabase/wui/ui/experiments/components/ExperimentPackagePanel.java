@@ -39,8 +39,6 @@ import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ExperimentsDownloadPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ListExperimentsDataProvider;
 import cz.zcu.kiv.eegdatabase.wui.ui.licenses.LicenseRequestPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.licenses.components.ViewLicensePanel;
-import cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart.ExperimentBuyDownloadLinkPanel;
-import cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart.ExperimentPackageBuyDownloadLinkPanel;
 import cz.zcu.kiv.eegdatabase.wui.ui.signalProcessing.MethodListPage;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;

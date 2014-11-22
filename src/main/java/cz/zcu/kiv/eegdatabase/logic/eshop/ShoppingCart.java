@@ -67,14 +67,14 @@ public class ShoppingCart implements Serializable {
     public void addToCart(Experiment experiment) {
 
         if (!isInCart(experiment)) {
-            order.getItems().add(new OrderItem(experiment));
+            order.getItems().add(new OrderItem(experiment, order));
         }
     }
 
     public void addToCart(ExperimentPackage expPackage) {
 
         if (!isInCart(expPackage)) {
-            order.getItems().add(new OrderItem(expPackage));
+            order.getItems().add(new OrderItem(expPackage, order));
         }
     }
 
@@ -87,7 +87,7 @@ public class ShoppingCart implements Serializable {
             } else if (tmp.getExperiment().getExperimentId() == experiment.getExperimentId()) {
                 return true;
             } else {
-                return false;
+                continue;
             }
         }
 
@@ -103,7 +103,7 @@ public class ShoppingCart implements Serializable {
             } else if (tmp.getExperimentPackage().getExperimentPackageId() == expPackage.getExperimentPackageId()) {
                 return true;
             } else {
-                return false;
+                continue;
             }
         }
 
@@ -121,6 +121,10 @@ public class ShoppingCart implements Serializable {
 
     public int size() {
         return order.getItems().size();
+    }
+    
+    public void clear() {
+        this.order = new Order();
     }
 
 }

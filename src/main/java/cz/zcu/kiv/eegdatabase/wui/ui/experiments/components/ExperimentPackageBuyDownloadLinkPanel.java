@@ -18,9 +18,9 @@
  *  
  *  ***********************************************************************************************************************
  *  
- *   ExperimentBuyDownloadLinkPanel.java, 2014/13/10 00:01 Jakub Rinkes
+ *   ExperimentPackageBuyDownloadLinkPanel.java, 2014/13/10 00:01 Jakub Rinkes
  ******************************************************************************/
-package cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart;
+package cz.zcu.kiv.eegdatabase.wui.ui.experiments.components;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -29,27 +29,28 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-import cz.zcu.kiv.eegdatabase.data.pojo.Experiment;
+import cz.zcu.kiv.eegdatabase.data.pojo.ExperimentPackage;
 import cz.zcu.kiv.eegdatabase.wui.app.session.EEGDataBaseSession;
 import cz.zcu.kiv.eegdatabase.wui.components.utils.PageParametersUtils;
 import cz.zcu.kiv.eegdatabase.wui.components.utils.ResourceUtils;
 import cz.zcu.kiv.eegdatabase.wui.core.order.OrderFacade;
-import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ExperimentsDownloadPage;
+import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ExperimentsPackageDownloadPage;
 
-public class ExperimentBuyDownloadLinkPanel extends Panel {
+public class ExperimentPackageBuyDownloadLinkPanel extends Panel {
 
     private static final long serialVersionUID = 5458856518415845451L;
 
     @SpringBean
     private OrderFacade facade;
 
-    public ExperimentBuyDownloadLinkPanel(String id, IModel<Experiment> model) {
-        super(id);
-        final Experiment experiment = model.getObject();
+    private boolean inCart = false;
+    private boolean isDownloadable = false;
 
-        boolean isDownloadVisible = EEGDataBaseSession.get().isExperimentPurchased(experiment.getExperimentId());
-        boolean inCart = EEGDataBaseSession.get().getShoppingCart().isInCart(experiment);
-        boolean isAddCartLinkVisible = !inCart && !isDownloadVisible;
+    private ExperimentPackage experimentPck;
+
+    public ExperimentPackageBuyDownloadLinkPanel(String id, IModel<ExperimentPackage> model) {
+        super(id);
+        experimentPck = model.getObject();
 
         add(new Link<Void>("addToCartLink") {
 
@@ -57,17 +58,53 @@ public class ExperimentBuyDownloadLinkPanel extends Panel {
 
             @Override
             public void onClick() {
-                EEGDataBaseSession.get().getShoppingCart().addToCart(experiment);
+                EEGDataBaseSession.get().getShoppingCart().addToCart(experimentPck);
+                setResponsePage(getPage());
             }
-        }.setVisibilityAllowed(isAddCartLinkVisible));
 
-        add(new Label("inCart", ResourceUtils.getModel("text.inCart")).setVisibilityAllowed(inCart));
+            @Override
+            public boolean isVisible() {
+                return !inCart && !isDownloadable;
+            }
+        });
+
+        add(new Label("inCart", ResourceUtils.getModel("text.inCart")) {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public boolean isVisible() {
+                return inCart;
+            }
+
+        });
 
         // "Add to Cart" links are rendered only for experiments that haven't been places in the cart yet.
+        BookmarkablePageLink<Void> downloadLink = new BookmarkablePageLink<Void>("downloadLink", ExperimentsPackageDownloadPage.class,
+                PageParametersUtils.getDefaultPageParameters(experimentPck.getExperimentPackageId())) {
 
-        BookmarkablePageLink<Void> downloadLink = new BookmarkablePageLink<Void>("downloadLink", ExperimentsDownloadPage.class, PageParametersUtils.getDefaultPageParameters(experiment
-                .getExperimentId()));
-        add(downloadLink.setVisibilityAllowed(isDownloadVisible));
+            private static final long serialVersionUID = 1L;
 
+            @Override
+            public boolean isVisible() {
+                return isDownloadable;
+            }
+        };
+        add(downloadLink);
+
+    }
+
+    @Override
+    protected void onConfigure() {
+        inCart = inCart(experimentPck);
+        isDownloadable = isDownloadable(experimentPck);
+    }
+
+    private boolean isDownloadable(final ExperimentPackage experimentPck) {
+        return EEGDataBaseSession.get().isExperimentPackagePurchased(experimentPck.getExperimentPackageId());
+    }
+
+    private boolean inCart(final ExperimentPackage experimentPck) {
+        return EEGDataBaseSession.get().getShoppingCart().isInCart(experimentPck);
     }
 }

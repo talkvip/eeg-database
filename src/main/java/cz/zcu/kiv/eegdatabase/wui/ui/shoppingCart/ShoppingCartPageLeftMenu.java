@@ -26,6 +26,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 import cz.zcu.kiv.eegdatabase.wui.components.menu.button.IButtonPageMenu;
 import cz.zcu.kiv.eegdatabase.wui.components.page.MenuPage;
+import cz.zcu.kiv.eegdatabase.wui.ui.order.ListOrderPage;
 
 /**
  * LeftMenu definition for ShoppingCart Page

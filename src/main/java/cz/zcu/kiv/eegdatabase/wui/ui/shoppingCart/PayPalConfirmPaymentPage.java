@@ -43,12 +43,15 @@ import cz.zcu.kiv.eegdatabase.wui.app.EEGDataBaseApplication;
 import cz.zcu.kiv.eegdatabase.wui.app.session.EEGDataBaseSession;
 import cz.zcu.kiv.eegdatabase.wui.components.page.MenuPage;
 import cz.zcu.kiv.eegdatabase.wui.components.utils.ResourceUtils;
+import cz.zcu.kiv.eegdatabase.wui.ui.order.ListOrderPage;
 
 /**
  * Page for order confirmation after authorizing payment on PayPal server.
  * Part of the two-step confirmation process.
  * User: jfronek
  * Date: 21.3.2013
+ * 
+ * XXX paypal payments disabled for now - not necessary.
  */
 @AuthorizeInstantiation(value = { "ROLE_READER", "ROLE_USER", "ROLE_EXPERIMENTER", "ROLE_ADMIN" })
 public class PayPalConfirmPaymentPage extends MenuPage{
@@ -103,9 +106,6 @@ public class PayPalConfirmPaymentPage extends MenuPage{
                 boolean success = PayPalTools.doExpressCheckout(token);
                 if(success){
                     // Copies current order to match the purchased items. Security measure to ensure the user is given exactly what he paid for.
-//                    EEGDataBaseSession.get().setAttribute("order", (ArrayList) ((ArrayList) EEGDataBaseSession.get().getShoppingCart().getOrder()).clone());
-//                    EEGDataBaseSession.get().getShoppingCart().getOrder().clear();
-                    // TODO rework this
                     setResponsePage(ListOrderPage.class);
                 }
                 else{

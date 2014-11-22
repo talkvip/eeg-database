@@ -20,7 +20,7 @@
  *  
  *   OrderItemPanel.java, 2014/14/09 00:01 Jakub Rinkes
  ******************************************************************************/
-package cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart;
+package cz.zcu.kiv.eegdatabase.wui.ui.order;
 
 import java.util.Date;
 

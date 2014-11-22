@@ -20,7 +20,7 @@
  *  
  *   ListOrderPage.java, 2014/14/09 00:01 Jakub Rinkes
  ******************************************************************************/
-package cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart;
+package cz.zcu.kiv.eegdatabase.wui.ui.order;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +48,7 @@ import cz.zcu.kiv.eegdatabase.wui.components.utils.ResourceUtils;
 import cz.zcu.kiv.eegdatabase.wui.core.order.OrderFacade;
 import cz.zcu.kiv.eegdatabase.wui.core.person.PersonFacade;
 import cz.zcu.kiv.eegdatabase.wui.ui.home.HomePage;
+import cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart.ShoppingCartPageLeftMenu;
 
 @AuthorizeInstantiation(value = { "ROLE_READER", "ROLE_USER", "ROLE_EXPERIMENTER", "ROLE_ADMIN" })
 public class ListOrderPage extends MenuPage {

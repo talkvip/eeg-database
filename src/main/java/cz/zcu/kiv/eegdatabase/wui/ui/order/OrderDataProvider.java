@@ -20,7 +20,7 @@
  *  
  *   OrderDataProvider.java, 2013/10/02 00:01 Jakub Rinkes
  ******************************************************************************/
-package cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart;
+package cz.zcu.kiv.eegdatabase.wui.ui.order;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 

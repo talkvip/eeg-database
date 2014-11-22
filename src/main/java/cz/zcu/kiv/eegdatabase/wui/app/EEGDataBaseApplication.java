@@ -122,6 +122,8 @@ import cz.zcu.kiv.eegdatabase.wui.ui.lists.form.FileMetadataFormPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.lists.form.HardwareFormPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.lists.form.PersonOptParamFormPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.lists.form.WeatherFormPage;
+import cz.zcu.kiv.eegdatabase.wui.ui.order.ListOrderPage;
+import cz.zcu.kiv.eegdatabase.wui.ui.order.OrderDetailPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.people.ListPersonPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.people.PersonDetailPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.people.form.PersonAddParamFormPage;
@@ -132,8 +134,6 @@ import cz.zcu.kiv.eegdatabase.wui.ui.scenarios.form.ScenarioFormPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.scenarios.form.ScenarioSchemaFormPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.search.SearchPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.security.ConfirmPage;
-import cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart.ListOrderPage;
-import cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart.OrderDetailPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.welcome.WelcomePage;
 
 /**

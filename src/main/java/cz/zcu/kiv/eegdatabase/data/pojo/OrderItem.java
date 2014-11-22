@@ -42,12 +42,16 @@ public class OrderItem implements Serializable, Comparable<OrderItem> {
 
     }
 
-    public OrderItem(Experiment experiment) {
+    public OrderItem(Experiment experiment, Order order) {
         this.experiment = experiment;
+        this.order = order;
+        this.price = BigDecimal.ZERO;
     }
 
-    public OrderItem(ExperimentPackage experimentPackage) {
+    public OrderItem(ExperimentPackage experimentPackage, Order order) {
         this.experimentPackage = experimentPackage;
+        this.order = order;
+        this.price = BigDecimal.ZERO;
     }
 
     public int getId() {

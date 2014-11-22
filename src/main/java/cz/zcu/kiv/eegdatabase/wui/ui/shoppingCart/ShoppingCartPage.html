@@ -54,10 +54,14 @@ This file is part of the EEG-database project
             <div>
                 <span wicket:id="totalPriceMessage"></span>
                 <span wicket:id="totalPriceAmount"></span>
-                <span wicket:id="totalPriceCurrency"></span> 
-                <a href="#" wicket:id="PayPalExpressCheckoutLink">
-                    <img src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" align="right" style="margin-right: 7px;">
-                </a>
+                <span wicket:id="totalPriceCurrency"></span>
+                 
+                <!--                 
+                    <a href="#" wicket:id="PayPalExpressCheckoutLink">
+                        <img src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" align="right" style="margin-right: 7px;">
+                    </a>
+                -->
+                <a href="#" wicket:id="createOrder" class="lightButtonLink"><wicket:message key="label.order.action.create"></wicket:message></a>
             </div>
         </div>
     </wicket:extend>
