@@ -60,6 +60,7 @@ import org.apache.wicket.model.*;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -131,6 +132,8 @@ public class ExperimentPackagePanel extends Panel {
 		this.addHeader();
 		this.addFooter();
 		this.addExperimentListToCont(experimentListCont);
+		add(new ExperimentPackageBuyDownloadLinkPanel("buyDownloadLinkPanel", epModel)
+		.setVisibilityAllowed(!(epModel.getObject().getExperimentPackageId() == 0)));
     }
 
     /**
@@ -140,10 +143,9 @@ public class ExperimentPackagePanel extends Panel {
 		header = new WebMarkupContainer("header");
 		header.setOutputMarkupId(true);
 		this.add(header);
-
 		header.add(new Label("packageTitle", new PropertyModel(epModel, "name")));
 		header.add(new Label("researchGroupTitle", new PropertyModel(epModel, "researchGroup.title")));
-		header.add(new ExperimentPackageBuyDownloadLinkPanel("buyDownloadLinkPanel", epModel));
+		
 
 		WebMarkupContainer licenseCont = new WebMarkupContainer("licensesCont") {
 

@@ -24,26 +24,35 @@ package cz.zcu.kiv.eegdatabase.data.pojo;
 
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.Blob;
-import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 /**
  *
  * @author bydga
  */
 @Entity
 @Table(name="LICENSE")
-public class License implements Serializable{
+public class License implements Serializable {
 	
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "LICENSE_ID")
     private int licenseId;
 	
-    @Column(name = "PRICE")
-    private Float price;
+    @Column(name = "PRICE", precision = 19, scale = 2)
+    private BigDecimal price;
 
 	@ManyToOne
 	@JoinColumn(name = "RESEARCH_GROUP_ID")
@@ -81,11 +90,11 @@ public class License implements Serializable{
 		this.licenseId = licenseId;
 	}
 
-	public Float getPrice() {
+	public BigDecimal getPrice() {
 		return price;
 	}
 
-	public void setPrice(Float price) {
+	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
 

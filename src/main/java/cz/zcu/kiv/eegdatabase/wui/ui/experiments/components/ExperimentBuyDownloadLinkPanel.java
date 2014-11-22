@@ -22,6 +22,8 @@
  ******************************************************************************/
 package cz.zcu.kiv.eegdatabase.wui.ui.experiments.components;
 
+import java.math.BigDecimal;
+
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
@@ -51,7 +53,8 @@ public class ExperimentBuyDownloadLinkPanel extends Panel {
     public ExperimentBuyDownloadLinkPanel(String id, IModel<Experiment> model) {
         super(id);
         experiment = model.getObject();
-
+        
+        add(new Label("price", experiment.getPrice() != null ? experiment.getPrice() : BigDecimal.ZERO));
         add(new Link<Void>("addToCartLink") {
 
             private static final long serialVersionUID = 1L;

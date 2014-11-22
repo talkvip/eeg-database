@@ -115,6 +115,7 @@ public class ExperimentsDetailPage extends MenuPage {
         add(new Label("environmentNote", experiment.getEnvironmentNote()));
         add(new Label("privateExperiment", experiment.isPrivateExperiment()+""));
         add(new Label("scenario.title", experiment.getScenario().getTitle()));
+        add(new Label("price", experiment.getPrice()));
 
         Person personBySubjectPersonId = experiment.getPersonBySubjectPersonId();
         add(new TimestampLabel("dateOfBirth", personBySubjectPersonId.getDateOfBirth(), StringUtils.DATE_TIME_FORMAT_PATTER_ONLY_YEAR));

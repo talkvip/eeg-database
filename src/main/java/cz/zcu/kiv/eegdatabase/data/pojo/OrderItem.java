@@ -45,13 +45,13 @@ public class OrderItem implements Serializable, Comparable<OrderItem> {
     public OrderItem(Experiment experiment, Order order) {
         this.experiment = experiment;
         this.order = order;
-        this.price = BigDecimal.ZERO;
+        this.price = experiment.getPrice() != null ? experiment.getPrice() : BigDecimal.ZERO;
     }
 
     public OrderItem(ExperimentPackage experimentPackage, Order order) {
         this.experimentPackage = experimentPackage;
         this.order = order;
-        this.price = BigDecimal.ZERO;
+        this.price = experimentPackage.getPrice() != null ? experimentPackage.getPrice() : BigDecimal.ZERO;
     }
 
     public int getId() {
