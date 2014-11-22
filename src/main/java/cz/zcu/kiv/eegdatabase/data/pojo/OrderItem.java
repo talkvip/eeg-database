@@ -27,7 +27,7 @@ public class OrderItem implements Serializable, Comparable<OrderItem> {
     @JoinColumn(name = "ORDER_ID", nullable = false)
     private Order order;
 
-    @Column(name = "PRICE", nullable = false)
+    @Column(name = "PRICE", nullable = false, precision = 19, scale = 2)
     private BigDecimal price;
 
     @ManyToOne
