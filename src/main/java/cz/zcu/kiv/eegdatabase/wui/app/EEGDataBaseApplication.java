@@ -128,6 +128,7 @@ import cz.zcu.kiv.eegdatabase.wui.ui.people.ListPersonPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.people.PersonDetailPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.people.form.PersonAddParamFormPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.people.form.PersonFormPage;
+import cz.zcu.kiv.eegdatabase.wui.ui.pricing.PriceListPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.scenarios.ListScenariosPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.scenarios.ScenarioDetailPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.scenarios.form.ScenarioFormPage;
@@ -306,6 +307,7 @@ public class EEGDataBaseApplication extends AuthenticatedWebApplication implemen
         
         mountPackage("order-list", ListOrderPage.class);
         mountPackage("order-view", OrderDetailPage.class);
+        mountPage("pricelist", PriceListPage.class);
 
         mountPage("elastic", Elastic.class);
     }

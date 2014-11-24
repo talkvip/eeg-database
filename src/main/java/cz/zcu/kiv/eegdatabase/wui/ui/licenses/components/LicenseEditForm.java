@@ -22,6 +22,7 @@
  ******************************************************************************/
 package cz.zcu.kiv.eegdatabase.wui.ui.licenses.components;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -94,7 +95,7 @@ public class LicenseEditForm extends Panel {
 		c.setRequired(true);
 		form.add(c);
 
-		c = new NumberTextField<Float>("price", new PropertyModel(licenseModel, "price"), Float.class).setMinimum(0f);
+		c = new NumberTextField<BigDecimal>("price", new PropertyModel(licenseModel, "price"), BigDecimal.class).setMinimum(BigDecimal.ZERO);
 		c.setRequired(true);
 		c.setLabel(ResourceUtils.getModel("label.license.price"));
 		form.add(c);
