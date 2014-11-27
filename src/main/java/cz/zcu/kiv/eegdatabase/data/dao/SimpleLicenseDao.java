@@ -29,10 +29,15 @@ package cz.zcu.kiv.eegdatabase.data.dao;
 import cz.zcu.kiv.eegdatabase.data.pojo.License;
 import cz.zcu.kiv.eegdatabase.data.pojo.LicenseType;
 import cz.zcu.kiv.eegdatabase.data.pojo.PersonalLicense;
+import cz.zcu.kiv.eegdatabase.data.pojo.PersonalLicenseState;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
 /**
  *
@@ -76,6 +81,26 @@ public class SimpleLicenseDao extends SimpleGenericDao<License, Integer> impleme
             log.error(e.getMessage(), e);
             return new byte[0];
         }
+    }
+
+    @Override
+    public List<License> getLicenseForPackageAndOwnedByPerson(int personId, int packageId) {
+
+        String query = "select pl.license from PersonalLicense pl "
+                + "where pl.person.personId = :personId and pl.licenseState = :state and "
+                + "pl.license.licenseId IN ("
+                + "select epl.license.licenseId from ExperimentPackageLicense as epl where epl.experimentPackage.experimentPackageId = :packageId"
+                + ") and pl.license.researchGroup IS NOT NULL";
+
+        return (List<License>) this.getSession().createQuery(query)
+                .setParameter("personId", personId)
+                .setParameter("state", PersonalLicenseState.AUTHORIZED)
+                .setParameter("packageId", packageId).list();
+    }
+    
+    @Override
+    public void update(License transientObject) {
+        this.getSession().merge(transientObject);
     }
     
 }

@@ -361,6 +361,7 @@ public class ExperimentPackageManagePanel extends Panel {
 				FileUploadField fileUploadField = this.getFileUpload();
 				FileUpload uploadedFile = fileUploadField.getFileUpload();
 				
+				log.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " +uploadedFile);
                 if (uploadedFile != null) {
                     obj.setAttachmentFileName(uploadedFile.getClientFileName());
                     // TODO change this depraceted method.

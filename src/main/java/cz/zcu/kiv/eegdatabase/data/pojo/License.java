@@ -38,6 +38,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 /**
  *
  * @author bydga
@@ -213,6 +214,10 @@ public class License implements Serializable {
 		}
 		return true;
 	}
-
+	
+	@Transient
+	public String getLicenseInfo(){
+	    return title + " price: " + (price == null ? "No" : price);
+	}
 		
 }

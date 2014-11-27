@@ -37,6 +37,10 @@ public class OrderItem implements Serializable, Comparable<OrderItem> {
     @ManyToOne
     @JoinColumn(name = "EXPERIMENT_PACKAGE")
     private ExperimentPackage experimentPackage;
+    
+    @ManyToOne
+    @JoinColumn(name = "LICENSE")
+    private License license;
 
     public OrderItem() {
 
@@ -93,6 +97,14 @@ public class OrderItem implements Serializable, Comparable<OrderItem> {
     public void setExperimentPackage(ExperimentPackage experimentPackage) {
         this.experimentPackage = experimentPackage;
     }
+    
+    public License getLicense() {
+        return license;
+    }
+    
+    public void setLicense(License license) {
+        this.license = license;
+    }
 
     @Override
     public int hashCode() {
@@ -128,5 +140,14 @@ public class OrderItem implements Serializable, Comparable<OrderItem> {
         }
 
         return (id < o.getId()) ? -1 : ((id == o.getId()) ? 0 : 1);
+    }
+
+    public void setPriceFromItem() {
+        
+        if(experiment != null) {
+            price = experiment.getPrice();
+        } else {
+            price = experimentPackage.getPrice();
+        }
     }
 }

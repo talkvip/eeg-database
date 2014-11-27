@@ -23,6 +23,7 @@
 package cz.zcu.kiv.eegdatabase.wui.ui.experiments.components;
 
 import java.math.BigDecimal;
+import java.util.Currency;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -30,9 +31,11 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.convert.IConverter;
 
 import cz.zcu.kiv.eegdatabase.data.pojo.ExperimentPackage;
 import cz.zcu.kiv.eegdatabase.wui.app.session.EEGDataBaseSession;
+import cz.zcu.kiv.eegdatabase.wui.components.model.MoneyFormatConverter;
 import cz.zcu.kiv.eegdatabase.wui.components.utils.PageParametersUtils;
 import cz.zcu.kiv.eegdatabase.wui.components.utils.ResourceUtils;
 import cz.zcu.kiv.eegdatabase.wui.core.order.OrderFacade;
@@ -54,7 +57,15 @@ public class ExperimentPackageBuyDownloadLinkPanel extends Panel {
         super(id);
         experimentPck = model.getObject();
         
-        add(new Label("price", experimentPck.getPrice() != null ? experimentPck.getPrice() : BigDecimal.ZERO));
+        add(new Label("price", experimentPck.getPrice() != null ? experimentPck.getPrice() : BigDecimal.ZERO){
+            
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public <C> IConverter<C> getConverter(Class<C> type) {
+                return new MoneyFormatConverter(Currency.getInstance("EUR"), 2);
+            }
+        });
         add(new Link<Void>("addToCartLink") {
 
             private static final long serialVersionUID = 1L;

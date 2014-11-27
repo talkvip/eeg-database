@@ -36,10 +36,12 @@ import cz.zcu.kiv.eegdatabase.data.pojo.LicenseType;
 import cz.zcu.kiv.eegdatabase.data.pojo.ResearchGroup;
 import cz.zcu.kiv.eegdatabase.wui.core.GenericServiceImpl;
 import cz.zcu.kiv.eegdatabase.wui.core.license.LicenseService;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -158,4 +160,11 @@ public class LicenseServiceImpl extends GenericServiceImpl<License, Integer> imp
     public byte[] getLicenseAttachmentContent(int licenseId) {
         return licenseDao.getLicenseAttachmentContent(licenseId);
     }
+
+    @Override
+    @Transactional(readOnly=true)
+    public List<License> getLicenseForPackageAndOwnedByPerson(int personId, int packageId) {
+        return licenseDao.getLicenseForPackageAndOwnedByPerson(personId, packageId);
+    }
+    
 }

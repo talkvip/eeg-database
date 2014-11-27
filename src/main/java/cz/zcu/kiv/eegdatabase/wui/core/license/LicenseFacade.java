@@ -185,4 +185,6 @@ public interface LicenseFacade extends GenericFacade<License, Integer> {
 	
 	public byte[] getLicenseAttachmentContent(int licenseId);
 	
+	public List<License> getLicenseForPackageAndOwnedByPerson(int personId, int packageId);
+	
 }

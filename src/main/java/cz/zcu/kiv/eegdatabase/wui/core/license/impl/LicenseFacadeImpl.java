@@ -172,5 +172,10 @@ public class LicenseFacadeImpl extends GenericFacadeImpl<License, Integer> imple
     public byte[] getLicenseAttachmentContent(int licenseId) {
         return licenseService.getLicenseAttachmentContent(licenseId);
     }
+
+    @Override
+    public List<License> getLicenseForPackageAndOwnedByPerson(int personId, int packageId) {
+        return licenseService.getLicenseForPackageAndOwnedByPerson(personId, packageId);
+    }
 	
 }

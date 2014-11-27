@@ -98,4 +98,6 @@ public interface LicenseService extends GenericService<License, Integer> {
 	public List<License> getLicenseTemplates(ResearchGroup group);
 	
 	public byte[] getLicenseAttachmentContent(int licenseId);
+	
+	public List<License> getLicenseForPackageAndOwnedByPerson(int personId, int packageId);
 }
