@@ -159,6 +159,8 @@ public class LicenseRequestForm extends Panel {
         persLicense.setLicense(licenseModel.getObject());
         persLicense.setPerson(EEGDataBaseSession.get().getLoggedUser());
         licenseFacade.createRequestForLicense(persLicense);
+        
+        licenseModel.getObject().setFileContentStream(null);
     }
 
     protected void onCancelAction() {

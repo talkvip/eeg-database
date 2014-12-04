@@ -381,6 +381,7 @@ public class ExperimentPackageManagePanel extends Panel {
 				} else {
 					licenseFacade.update(obj);
 				}
+				obj.setFileContentStream(null);
 				ModalWindow.closeCurrent(target);
 				target.add(header);
 			}
