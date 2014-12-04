@@ -22,6 +22,7 @@
  ******************************************************************************/
 package cz.zcu.kiv.eegdatabase.wui.ui.experiments.components;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -361,11 +362,13 @@ public class ExperimentPackageManagePanel extends Panel {
 				FileUploadField fileUploadField = this.getFileUpload();
 				FileUpload uploadedFile = fileUploadField.getFileUpload();
 				
-				log.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " +uploadedFile);
                 if (uploadedFile != null) {
                     obj.setAttachmentFileName(uploadedFile.getClientFileName());
-                    // TODO change this depraceted method.
-                    obj.setAttachmentContent(Hibernate.createBlob(uploadedFile.getBytes()));
+                    try {
+                        obj.setFileContentStream(uploadedFile.getInputStream());
+                    } catch (IOException e) {
+                        log.error(e.getMessage(), e);
+                    }
                 }
 				
 				if (obj.getLicenseId() == 0) {

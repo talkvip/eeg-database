@@ -22,9 +22,15 @@
  ******************************************************************************/
 package cz.zcu.kiv.eegdatabase.wui.core.license.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Blob;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +51,9 @@ import cz.zcu.kiv.eegdatabase.wui.core.license.PersonalLicenseService;
  * @author J. Danek
  */
 public class PersonalLicenseServiceImpl extends GenericServiceImpl<PersonalLicense, Integer> implements PersonalLicenseService {
-
+    
+    protected Log log = LogFactory.getLog(getClass());
+    
 	private PersonalLicenseDao personalLicenseDao;
 	private MailService mailService;
 	private ResearchGroupFacade groupFacade;
@@ -101,13 +109,37 @@ public class PersonalLicenseServiceImpl extends GenericServiceImpl<PersonalLicen
 				personalLicense.getEmail(),
 				personalLicense.getLicense().getTitle());
 	}
+	
+    @Override
+    @Transactional
+    public Integer create(PersonalLicense newInstance) {
+
+        try {
+
+            InputStream fileContentStream = newInstance.getFileContentStream();
+            if (fileContentStream != null) {
+                Blob createBlob = personalLicenseDao.getSessionFactory().getCurrentSession().getLobHelper().createBlob(fileContentStream, fileContentStream.available());
+                newInstance.setAttachmentContent(createBlob);
+            }
+
+            return personalLicenseDao.create(newInstance);
+
+        } catch (HibernateException e) {
+            log.error(e.getMessage(), e);
+            return null;
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
+
+    }
 
 	@Override
 	@Transactional
 	public void confirmRequestForLicense(PersonalLicense personalLicense) {
 		personalLicense.setConfirmedDate(new Date());
 		personalLicense.setLicenseState(PersonalLicenseState.AUTHORIZED);
-		this.personalLicenseDao.update(personalLicense);	
+		this.personalLicenseDao.merge(personalLicense);	
 		this.mailService.sendLicenseRequestConfirmationEmail(personalLicense.getEmail(), personalLicense.getLicense().getTitle());
 	}
 
@@ -127,7 +159,7 @@ public class PersonalLicenseServiceImpl extends GenericServiceImpl<PersonalLicen
 	public void rejectRequestForLicense(PersonalLicense personalLicense) {
 		personalLicense.setLicenseState(PersonalLicenseState.REJECTED);
 		personalLicense.setConfirmedDate(new Date());
-		this.personalLicenseDao.update(personalLicense);
+		this.personalLicenseDao.merge(personalLicense);
 		this.mailService.sendLicenseRequestRejectionEmail(personalLicense.getEmail(), personalLicense.getLicense().getTitle(), personalLicense.getResolutionComment());
 	}
 
@@ -141,5 +173,26 @@ public class PersonalLicenseServiceImpl extends GenericServiceImpl<PersonalLicen
     @Transactional(readOnly=true)
     public byte[] getPersonalLicenseAttachmentContent(int personalLicenseId) {
         return personalLicenseDao.getAttachmentContent(personalLicenseId);
+    }
+    
+    @Override
+    @Transactional
+    public void update(PersonalLicense transientObject) {
+
+        try {
+            // XXX WORKAROUND for Hibernate pre 4.0, update entity with blob this way.
+            PersonalLicense merged = personalLicenseDao.merge(transientObject);
+            InputStream fileContentStream = transientObject.getFileContentStream();
+            if (fileContentStream != null) {
+                Blob createBlob;
+                createBlob = personalLicenseDao.getSessionFactory().getCurrentSession().getLobHelper().createBlob(fileContentStream, fileContentStream.available());
+                merged.setAttachmentContent(createBlob);
+                personalLicenseDao.update(merged);
+            }
+        } catch (HibernateException e) {
+            log.error(e.getMessage(), e);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 }

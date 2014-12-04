@@ -26,6 +26,20 @@
  */
 package cz.zcu.kiv.eegdatabase.wui.core.license.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Blob;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+
 import cz.zcu.kiv.eegdatabase.data.dao.ExperimentPackageLicenseDao;
 import cz.zcu.kiv.eegdatabase.data.dao.GenericDao;
 import cz.zcu.kiv.eegdatabase.data.dao.LicenseDao;
@@ -37,20 +51,14 @@ import cz.zcu.kiv.eegdatabase.data.pojo.ResearchGroup;
 import cz.zcu.kiv.eegdatabase.wui.core.GenericServiceImpl;
 import cz.zcu.kiv.eegdatabase.wui.core.license.LicenseService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
-
 /**
  *
  * @author J. Danek
  */
 public class LicenseServiceImpl extends GenericServiceImpl<License, Integer> implements LicenseService {
-
+    
+    protected Log log = LogFactory.getLog(getClass());
+    
 	private ExperimentPackageLicenseDao experimentPackageLicenseDao;
 	private LicenseDao licenseDao;
 
@@ -70,6 +78,30 @@ public class LicenseServiceImpl extends GenericServiceImpl<License, Integer> imp
 	public LicenseServiceImpl(GenericDao<License, Integer> dao) {
 		super(dao);
 	}
+	
+    @Override
+    @Transactional
+    public Integer create(License newInstance) {
+
+        try {
+
+            InputStream fileContentStream = newInstance.getFileContentStream();
+            if (fileContentStream != null) {
+                Blob createBlob = licenseDao.getSessionFactory().getCurrentSession().getLobHelper().createBlob(fileContentStream, fileContentStream.available());
+                newInstance.setAttachmentContent(createBlob);
+            }
+
+            return licenseDao.create(newInstance);
+
+        } catch (HibernateException e) {
+            log.error(e.getMessage(), e);
+            return null;
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
+
+    }
 
 	@Override
 	@Transactional
@@ -165,6 +197,26 @@ public class LicenseServiceImpl extends GenericServiceImpl<License, Integer> imp
     @Transactional(readOnly=true)
     public List<License> getLicenseForPackageAndOwnedByPerson(int personId, int packageId) {
         return licenseDao.getLicenseForPackageAndOwnedByPerson(personId, packageId);
+    }
+    
+    @Override
+    @Transactional
+    public void update(License transientObject) {
+        try {
+            // XXX WORKAROUND for Hibernate pre 4.0, update entity with blob this way.
+            License merged = licenseDao.merge(transientObject);
+            InputStream fileContentStream = transientObject.getFileContentStream();
+            if (fileContentStream != null) {
+                Blob createBlob;
+                createBlob = licenseDao.getSessionFactory().getCurrentSession().getLobHelper().createBlob(fileContentStream, fileContentStream.available());
+                merged.setAttachmentContent(createBlob);
+                licenseDao.update(merged);
+            }
+        } catch (HibernateException e) {
+            log.error(e.getMessage(), e);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
     }
     
 }

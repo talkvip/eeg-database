@@ -23,6 +23,7 @@
 package cz.zcu.kiv.eegdatabase.data.pojo;
 
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Blob;
@@ -82,6 +83,9 @@ public class License implements Serializable {
     @Lob
     @Column(name = "ATTACHMENT_CONTENT")
     private Blob attachmentContent;
+    
+    @Transient
+    private InputStream fileContentStream;
 
 	public int getLicenseId() {
 		return licenseId;
@@ -219,5 +223,14 @@ public class License implements Serializable {
 	public String getLicenseInfo(){
 	    return title + " price: " + (price == null ? "No" : price);
 	}
+	
+	public void setFileContentStream(InputStream inputStream) {
+        this.fileContentStream = inputStream;
+    }
+    
+    @Transient
+    public InputStream getFileContentStream() {
+        return fileContentStream;
+    }
 		
 }

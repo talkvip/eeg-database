@@ -26,6 +26,7 @@
  */
 package cz.zcu.kiv.eegdatabase.data.pojo;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.sql.Blob;
 import java.util.Date;
@@ -42,6 +43,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.Transient;
 
 /**
  * 
@@ -101,6 +103,9 @@ public class PersonalLicense implements Serializable {
     @Lob
     @Column(name = "ATTACHMENT_CONTENT")
     private Blob attachmentContent;
+    
+    @Transient
+    private InputStream fileContentStream;
 
     public String getAttachmentFileName() {
         return attachmentFileName;
@@ -215,5 +220,14 @@ public class PersonalLicense implements Serializable {
         String tmp = this.getFirstName();
         tmp = (tmp == null || tmp.equals("")) ? this.getLastName() : tmp + " " + this.getLastName();
         return tmp;
+    }
+    
+    public void setFileContentStream(InputStream inputStream) {
+        this.fileContentStream = inputStream;
+    }
+    
+    @Transient
+    public InputStream getFileContentStream() {
+        return fileContentStream;
     }
 }

@@ -22,6 +22,10 @@
  ******************************************************************************/
 package cz.zcu.kiv.eegdatabase.wui.ui.licenses.components;
 
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
@@ -54,6 +58,8 @@ import cz.zcu.kiv.eegdatabase.wui.core.license.LicenseFacade;
 public class LicenseRequestForm extends Panel {
 
     private static final long serialVersionUID = -5784676290092286346L;
+    
+    protected Log log = LogFactory.getLog(getClass());
 
     @SpringBean
     private LicenseFacade licenseFacade;
@@ -144,8 +150,11 @@ public class LicenseRequestForm extends Panel {
         FileUpload f = uploadField.getFileUpload();
         if (f != null) {
             persLicense.setAttachmentFileName(f.getClientFileName());
-            // TODO change this depraceted method.
-            persLicense.setAttachmentContent(Hibernate.createBlob(f.getBytes()));
+            try {
+                licenseModel.getObject().setFileContentStream(f.getInputStream());
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+            }
         }
         persLicense.setLicense(licenseModel.getObject());
         persLicense.setPerson(EEGDataBaseSession.get().getLoggedUser());
