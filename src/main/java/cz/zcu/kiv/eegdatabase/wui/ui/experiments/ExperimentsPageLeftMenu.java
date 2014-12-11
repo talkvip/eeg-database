@@ -52,7 +52,8 @@ public enum ExperimentsPageLeftMenu implements IButtonPageMenu {
     SEARCH(UnderConstructPage.class, "menuItem.searchMeasuration", null),
     ADD_EXPERIMENTS(ExperimentFormPage.class, "menuItem.experiments.addExperiment", null),
     RESULT(ResultListPage.class, "menuItem.serviceResult", null),
-    PRICELIST(PriceListPage.class, "pageTitle.pricelist", null),
+// XXX price list hidden for now.
+    //    PRICELIST(PriceListPage.class, "pageTitle.pricelist", null),
 
     ;
 

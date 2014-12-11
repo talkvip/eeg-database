@@ -26,24 +26,24 @@
  */
 package cz.zcu.kiv.eegdatabase.data.dao;
 
-import cz.zcu.kiv.eegdatabase.data.pojo.License;
-import cz.zcu.kiv.eegdatabase.data.pojo.LicenseType;
-import cz.zcu.kiv.eegdatabase.data.pojo.PersonalLicense;
-import cz.zcu.kiv.eegdatabase.data.pojo.PersonalLicenseState;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import cz.zcu.kiv.eegdatabase.data.pojo.License;
+import cz.zcu.kiv.eegdatabase.data.pojo.LicenseType;
+import cz.zcu.kiv.eegdatabase.data.pojo.PersonalLicenseState;
 
 /**
  *
  * @author bydga
  */
 public class SimpleLicenseDao extends SimpleGenericDao<License, Integer> implements LicenseDao {
+    
+    protected Log log = LogFactory.getLog(getClass());
 
     public SimpleLicenseDao() {
 	super(License.class);
@@ -101,6 +101,48 @@ public class SimpleLicenseDao extends SimpleGenericDao<License, Integer> impleme
     @Override
     public void update(License transientObject) {
         this.getSession().merge(transientObject);
+    }
+
+    @Override
+    public License getLicenseForPurchasedExperiment(int experimentId, int personId) {
+        
+        // original SQL : select eoi.license from eeg_order as eo 
+        // left join eeg_order_item as eoi on eo.order_id = eoi.order_id 
+        // where eoi.experiment = :experimentId and eo.person = :personId order by eo.date asc
+        
+        String query = "select eoi.license from OrderItem as eoi "
+                + "join eoi.order as eo "
+                + " where eo.id = eoi.order.id and eoi.experiment.experimentId = :experimentId and eo.person.personId = :personId "
+                + "order by eo.date asc limit 1";
+
+        License license = (License) this.getSessionFactory().getCurrentSession().createQuery(query)
+                .setParameter("personId", personId)
+                .setParameter("experimentId", experimentId)
+                .uniqueResult();
+        
+        return license;
+    }
+
+    @Override
+    public License getLicenseForPurchasedExpPackage(int experimentPackageId, int personId) {
+        
+        // original SQL : select eoi.license from eeg_order as eo 
+        // left join eeg_order_item as eoi on eo.order_id = eoi.order_id 
+        // where eoi.experiment_package = :experimentPackageId and eo.person = :personId order by eo.date asc
+        
+        String query = "select eoi.license from OrderItem as eoi "
+                + "join eoi.order as eo "
+                + "where eo.id = eoi.order.id and eoi.experimentPackage.experimentPackageId = :experimentPackageId and eo.person.personId = :personId "
+                + "order by eo.date asc limit 1";
+        
+        License license = (License) this.getSessionFactory().getCurrentSession().createQuery(query)
+                .setParameter("personId", personId)
+                .setParameter("experimentPackageId", experimentPackageId)
+                .uniqueResult();
+        
+        
+        
+        return license;
     }
     
 }

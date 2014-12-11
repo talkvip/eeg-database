@@ -57,6 +57,8 @@ public class ExperimentPackageBuyDownloadLinkPanel extends Panel {
         super(id);
         experimentPck = model.getObject();
         
+        // XXX price hidden for now.
+        /*
         add(new Label("price", experimentPck.getPrice() != null ? experimentPck.getPrice() : BigDecimal.ZERO){
             
             private static final long serialVersionUID = 1L;
@@ -66,6 +68,7 @@ public class ExperimentPackageBuyDownloadLinkPanel extends Panel {
                 return new MoneyFormatConverter(Currency.getInstance("EUR"), 2);
             }
         });
+        */
         add(new Link<Void>("addToCartLink") {
 
             private static final long serialVersionUID = 1L;

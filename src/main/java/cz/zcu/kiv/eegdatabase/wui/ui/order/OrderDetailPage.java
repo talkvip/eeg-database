@@ -32,6 +32,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.StringValue;
 
+import cz.zcu.kiv.eegdatabase.data.pojo.License;
 import cz.zcu.kiv.eegdatabase.data.pojo.Order;
 import cz.zcu.kiv.eegdatabase.data.pojo.OrderItem;
 import cz.zcu.kiv.eegdatabase.wui.components.menu.button.ButtonPageMenu;
@@ -50,7 +51,7 @@ public class OrderDetailPage extends MenuPage {
 
     @SpringBean
     private OrderFacade orderFacade;
-
+    
     public OrderDetailPage(PageParameters parameters) {
 
         StringValue orderIdParam = parameters.get(DEFAULT_PARAM_ID);
@@ -87,9 +88,9 @@ public class OrderDetailPage extends MenuPage {
             @Override
             protected void populateItem(ListItem<OrderItem> item) {
 
-                item.add(new Label("id", item.getModel().getObject().getId()));
                 item.add(new OrderItemPanel("item", item.getModel()));
                 item.add(new Label("price", item.getModel().getObject().getPrice()));
+                item.add(new Label("license", item.getModelObject().getLicense().getLicenseInfo()));
             }
         };
 

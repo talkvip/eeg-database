@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import cz.zcu.kiv.eegdatabase.data.pojo.Order;
+import cz.zcu.kiv.eegdatabase.data.pojo.OrderItem;
 import cz.zcu.kiv.eegdatabase.wui.core.GenericService;
 
 public interface OrderService extends GenericService<Order, Integer> {
@@ -19,4 +20,6 @@ public interface OrderService extends GenericService<Order, Integer> {
     Set<Integer> getPurchasedExperimentId(int personId);
     
     Set<Integer> getPurchasedExperimentPackageId(int personId);
+    
+    OrderItem getOrderItemForExperiment(int experimentId, int personId);
 }

@@ -307,7 +307,9 @@ public class EEGDataBaseApplication extends AuthenticatedWebApplication implemen
         
         mountPackage("order-list", ListOrderPage.class);
         mountPackage("order-view", OrderDetailPage.class);
-        mountPage("pricelist", PriceListPage.class);
+        
+// XXX price list hidden for now.
+//        mountPage("pricelist", PriceListPage.class);
 
         mountPage("elastic", Elastic.class);
     }

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cz.zcu.kiv.eegdatabase.data.dao.OrderDao;
 import cz.zcu.kiv.eegdatabase.data.pojo.Order;
+import cz.zcu.kiv.eegdatabase.data.pojo.OrderItem;
 import cz.zcu.kiv.eegdatabase.wui.core.GenericServiceImpl;
 
 public class OrderServiceImpl extends GenericServiceImpl<Order, Integer> implements OrderService {
@@ -59,5 +60,11 @@ public class OrderServiceImpl extends GenericServiceImpl<Order, Integer> impleme
     @Transactional(readOnly = true)
     public Set<Integer> getPurchasedExperimentPackageId(int personId) {
         return dao.getPurchasedExperimentPackageId(personId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrderItem getOrderItemForExperiment(int experimentId, int personId) {
+        return dao.getOrderItemForExperiment(experimentId, personId);
     }
 }

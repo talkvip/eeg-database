@@ -36,6 +36,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.activemq.util.ByteArrayInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,6 +48,7 @@ import cz.zcu.kiv.eegdatabase.data.pojo.Experiment;
 import cz.zcu.kiv.eegdatabase.data.pojo.ExperimentPackage;
 import cz.zcu.kiv.eegdatabase.data.pojo.FileMetadataParamVal;
 import cz.zcu.kiv.eegdatabase.data.pojo.History;
+import cz.zcu.kiv.eegdatabase.data.pojo.License;
 import cz.zcu.kiv.eegdatabase.data.pojo.Person;
 import cz.zcu.kiv.eegdatabase.logic.controller.experiment.MetadataCommand;
 import cz.zcu.kiv.eegdatabase.logic.zip.ZipGenerator;
@@ -54,6 +56,7 @@ import cz.zcu.kiv.eegdatabase.wui.core.experimentpackage.ExperimentPackageServic
 import cz.zcu.kiv.eegdatabase.wui.core.file.FileDTO;
 import cz.zcu.kiv.eegdatabase.wui.core.file.FileService;
 import cz.zcu.kiv.eegdatabase.wui.core.history.HistoryService;
+import cz.zcu.kiv.eegdatabase.wui.core.license.LicenseService;
 import cz.zcu.kiv.eegdatabase.wui.core.person.PersonService;
 
 /**
@@ -79,6 +82,8 @@ public class ExperimentDownloadProvider {
     ExperimentPackageService packageService;
 
     ZipGenerator zipGenerator;
+    
+    LicenseService licenseService;
 
     @Required
     public void setService(ExperimentsService service) {
@@ -109,6 +114,11 @@ public class ExperimentDownloadProvider {
     public void setPackageService(ExperimentPackageService packageService) {
         this.packageService = packageService;
     }
+    
+    @Required
+    public void setLicenseService(LicenseService licenseService) {
+        this.licenseService = licenseService;
+    }
 
     /**
      * Method get data from web page, preprocess them for generator and generate zip file with content.
@@ -131,7 +141,7 @@ public class ExperimentDownloadProvider {
             // prepared history log
             createHistoryRecordAboutDownload(experiment);
 
-            File file = zipGenerator.generate(experiment, mc, newFiles);
+            File file = zipGenerator.generate(experiment, mc, newFiles, licenseService.getPublicLicenseFile(), licenseService.getPublicLicenseFileName());
 
             FileDTO dto = new FileDTO();
             dto.setFile(file);
@@ -151,7 +161,7 @@ public class ExperimentDownloadProvider {
     }
 
     @Transactional
-    public FileDTO generatePackageFile(ExperimentPackage pckg, MetadataCommand mc) {
+    public FileDTO generatePackageFile(ExperimentPackage pckg, MetadataCommand mc, License license) {
 
         ZipOutputStream zipOutputStream = null;
         FileOutputStream fileOutputStream = null;
@@ -161,7 +171,7 @@ public class ExperimentDownloadProvider {
         try {
             FileDTO dto = new FileDTO();
             dto.setFileName(pckg.getName().replaceAll("\\s", "_") + ".zip");
-
+            
             // create temp zip file
             tempZipFile = File.createTempFile("experimentDownload_", ".zip");
             // open stream to temp zip file
@@ -180,9 +190,12 @@ public class ExperimentDownloadProvider {
                 } else
                     experimentDirPrefix = "Experiment_data_" + exp.getExperimentId() + "/";
                 // generate temp zip file with experiment
-                File file = zipGenerator.generate(exp, mc, exp.getDataFiles());
+                byte[] licenseFile = license.getLicenseId() == licenseService.getPublicLicense().getLicenseId() ? licenseService.getPublicLicenseFile(): licenseService.getLicenseAttachmentContent(license.getLicenseId());
+                String licenseFileName = license.getLicenseId() == licenseService.getPublicLicense().getLicenseId() ? licenseService.getPublicLicenseFileName() : license.getAttachmentFileName();
+                File file = zipGenerator.generate(exp, mc, exp.getDataFiles(), licenseFile, licenseFileName);
                 in = new ZipInputStream(new FileInputStream(file));
                 ZipEntry entryIn = null;
+                
                 // copy unziped experiment in package zip file.
                 // NOTE: its easier solution copy content of one zip in anoter instead create directory structure via java.io.File.
                 while ((entryIn = in.getNextEntry()) != null) {

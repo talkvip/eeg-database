@@ -24,7 +24,7 @@ package cz.zcu.kiv.eegdatabase.wui.ui.shoppingCart;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Date;
 import java.util.List;
@@ -117,26 +117,31 @@ public class ShoppingCartPage extends MenuPage {
             protected void populateItem(final ListItem<OrderItem> item) {
 
                 item.add(new OrderItemPanel("item", item.getModel()));
-                item.add(new Label("price", item.getModel().getObject().getPrice()) {
 
-                    @Override
-                    public <C> IConverter<C> getConverter(Class<C> type) {
-                        return new MoneyFormatConverter(Currency.getInstance("EUR"), 2);
-                    }
-                });
+                // XXX price hidden for now.
+                /*
+                 * item.add(new Label("price", item.getModel().getObject().getPrice()) {
+                 * 
+                 * @Override public <C> IConverter<C> getConverter(Class<C> type) { return new MoneyFormatConverter(Currency.getInstance("EUR"), 2); } });
+                 */
                 item.add(new RemoveLinkPanel("removeItemLink", item.getModel()));
 
-                List<License> licenses;
+                List<License> licenses = new ArrayList<License>();
                 boolean isExpPackageLicenseChoiceShow = item.getModelObject().getExperiment() == null;
                 if (isExpPackageLicenseChoiceShow) {
                     int experimentPackageId = item.getModelObject().getExperimentPackage().getExperimentPackageId();
-                    licenses = licenseFacade.getLicenseForPackageAndOwnedByPerson(loggedUser.getPersonId(), experimentPackageId);
-                } else {
-                    licenses = Collections.EMPTY_LIST;
+                    licenses.addAll(licenseFacade.getLicenseForPackageAndOwnedByPerson(loggedUser.getPersonId(), experimentPackageId));
+                    licenses.add(0, licenseFacade.getPublicLicense());
                 }
 
                 ChoiceRenderer<License> renderer = new ChoiceRenderer<License>("licenseInfo", "licenseId");
                 DropDownChoice<License> licenseChoice = new DropDownChoice<License>("license", licenses, renderer);
+                
+                if (isExpPackageLicenseChoiceShow) {
+                    // preselect first license for dropdown choice component
+                    item.getModelObject().setLicense(licenseChoice.getChoices().get(0));
+                }
+                
                 licenseChoice.add(new AjaxFormComponentUpdatingBehavior("onChange") {
 
                     private static final long serialVersionUID = 1L;
@@ -150,17 +155,19 @@ public class ShoppingCartPage extends MenuPage {
                         } else {
                             orderItem.setPriceFromItem();
                         }
+                        
                         target.add(container);
                         target.add(totalPriceLabel);
                     }
                 });
-                licenseChoice.setNullValid(true);
                 licenseChoice.setVisibilityAllowed(isExpPackageLicenseChoiceShow && !licenses.isEmpty());
-                item.add(new Label("NoLicenseLabel", ResourceUtils.getModel("select.option.noLicenseAvailable")).setVisibilityAllowed(!(isExpPackageLicenseChoiceShow && !licenses.isEmpty())));
+                item.add(new Label("NoLicenseLabel", ResourceUtils.getModel("label.license.public")).setVisibilityAllowed(!(isExpPackageLicenseChoiceShow && !licenses.isEmpty())));
                 item.add(licenseChoice);
 
             }
         };
+        
+        items.setReuseItems(true);
         container.add(items);
         add(container);
         add(new Label("totalPriceMessage", ResourceUtils.getString("label.totalPrice") + " "));
@@ -203,10 +210,25 @@ public class ShoppingCartPage extends MenuPage {
                 order.setDate(new Timestamp(new Date().getTime()));
                 order.setPerson(EEGDataBaseSession.get().getLoggedUser());
                 order.setOrderPrice(shoppingCart.getTotalPrice());
+                
+                License publicLicense = licenseFacade.getPublicLicense();
+                
+                for(OrderItem item : order.getItems()) {
+                    
+                    if(item.getLicense() == null) {
+                        item.setLicense(publicLicense);
+                    }
+                    
+                    if(item.getPrice() == null) {
+                        item.setPrice(BigDecimal.ZERO);
+                    }
+                }
 
                 Integer orderId = orderFacade.create(order);
 
                 EEGDataBaseSession.get().getShoppingCart().clear();
+                // flush cache with purchased items from session
+                EEGDataBaseSession.get().reloadPurchasedItemCache();
                 setResponsePage(OrderDetailPage.class, PageParametersUtils.getDefaultPageParameters(orderId));
             }
 

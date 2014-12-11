@@ -29,6 +29,7 @@ package cz.zcu.kiv.eegdatabase.logic.xml;
 import cz.zcu.kiv.eegdatabase.data.pojo.*;
 import cz.zcu.kiv.eegdatabase.data.xmlObjects.*;
 import cz.zcu.kiv.eegdatabase.logic.controller.experiment.MetadataCommand;
+import cz.zcu.kiv.eegdatabase.wui.components.utils.ResourceUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -85,8 +86,8 @@ public class XMLTransformer implements DataTransformer {
       if (mc.isTitle()) {
         scen.writeTitle(scenario.getTitle());
       }
-      if (mc.isLength()) {
-      scen.writeLength("" + scenario.getScenarioLength());
+      if (mc.isLength() && scenario.getScenarioLength() >= 0) {
+      scen.writeLength("" + scenario.getScenarioLength() + ResourceUtils.getString("valueTable.scenarioLength.minutes"));
       }
       if (mc.isDescription()) {
       scen.writeDescription(scenario.getDescription());

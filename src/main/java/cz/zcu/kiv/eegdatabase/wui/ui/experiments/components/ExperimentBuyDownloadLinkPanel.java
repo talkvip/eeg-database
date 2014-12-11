@@ -22,20 +22,15 @@
  ******************************************************************************/
 package cz.zcu.kiv.eegdatabase.wui.ui.experiments.components;
 
-import java.math.BigDecimal;
-import java.util.Currency;
-
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.convert.IConverter;
 
 import cz.zcu.kiv.eegdatabase.data.pojo.Experiment;
 import cz.zcu.kiv.eegdatabase.wui.app.session.EEGDataBaseSession;
-import cz.zcu.kiv.eegdatabase.wui.components.model.MoneyFormatConverter;
 import cz.zcu.kiv.eegdatabase.wui.components.utils.PageParametersUtils;
 import cz.zcu.kiv.eegdatabase.wui.components.utils.ResourceUtils;
 import cz.zcu.kiv.eegdatabase.wui.core.order.OrderFacade;
@@ -56,7 +51,9 @@ public class ExperimentBuyDownloadLinkPanel extends Panel {
     public ExperimentBuyDownloadLinkPanel(String id, IModel<Experiment> model) {
         super(id);
         experiment = model.getObject();
-
+        
+        // XXX price hidden for now.
+        /*
         add(new Label("price", experiment.getPrice() != null ? experiment.getPrice() : BigDecimal.ZERO) {
             
             private static final long serialVersionUID = 1L;
@@ -66,6 +63,7 @@ public class ExperimentBuyDownloadLinkPanel extends Panel {
                 return new MoneyFormatConverter(Currency.getInstance("EUR"), 2);
             }
         });
+        */
         add(new Link<Void>("addToCartLink") {
 
             private static final long serialVersionUID = 1L;

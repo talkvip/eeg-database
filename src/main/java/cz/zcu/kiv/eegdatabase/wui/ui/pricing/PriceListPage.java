@@ -65,6 +65,7 @@ import cz.zcu.kiv.eegdatabase.wui.core.group.ResearchGroupFacade;
 import cz.zcu.kiv.eegdatabase.wui.core.security.SecurityFacade;
 import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ExperimentsDetailPage;
 import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ExperimentsPageLeftMenu;
+import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ListExperimentsByPackagePage;
 import cz.zcu.kiv.eegdatabase.wui.ui.experiments.ListExperimentsDataProvider;
 import cz.zcu.kiv.eegdatabase.wui.ui.home.HomePage;
 
@@ -95,11 +96,16 @@ public class PriceListPage extends MenuPage {
     private ListExperimentsDataProvider experimentProvider;
 
     public PriceListPage() {
-
+        
+        // XXX price list hidden for now. exception redirect for access via url.
+        throw new RestartResponseAtInterceptPageException(ListExperimentsByPackagePage.class);
+        /*
+        
         setPageTitle(ResourceUtils.getModel("pageTitle.pricelist"));
         add(new ButtonPageMenu("leftMenu", ExperimentsPageLeftMenu.values()));
 
         setupComponents();
+        */
     }
 
     private void setupComponents() {

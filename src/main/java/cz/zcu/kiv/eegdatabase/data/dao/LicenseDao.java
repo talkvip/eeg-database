@@ -46,4 +46,8 @@ public interface LicenseDao extends GenericDao<License, Integer> {
 	public byte[] getLicenseAttachmentContent(int licenseId);
 	
 	public List<License> getLicenseForPackageAndOwnedByPerson(int personId, int packageId);
+	
+	public License getLicenseForPurchasedExperiment(int experimentId, int personId);
+	
+	public License getLicenseForPurchasedExpPackage(int experimentPackageId, int personId);
 }

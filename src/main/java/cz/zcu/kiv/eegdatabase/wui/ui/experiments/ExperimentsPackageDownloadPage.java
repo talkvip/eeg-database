@@ -24,18 +24,23 @@ package cz.zcu.kiv.eegdatabase.wui.ui.experiments;
 
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.StringValue;
 
 import cz.zcu.kiv.eegdatabase.data.pojo.ExperimentPackage;
+import cz.zcu.kiv.eegdatabase.data.pojo.License;
 import cz.zcu.kiv.eegdatabase.data.pojo.Person;
 import cz.zcu.kiv.eegdatabase.logic.controller.experiment.MetadataCommand;
 import cz.zcu.kiv.eegdatabase.wui.app.session.EEGDataBaseSession;
@@ -46,7 +51,9 @@ import cz.zcu.kiv.eegdatabase.wui.components.utils.ResourceUtils;
 import cz.zcu.kiv.eegdatabase.wui.core.experimentpackage.ExperimentPackageFacade;
 import cz.zcu.kiv.eegdatabase.wui.core.experiments.ExperimentDownloadProvider;
 import cz.zcu.kiv.eegdatabase.wui.core.file.FileDTO;
+import cz.zcu.kiv.eegdatabase.wui.core.license.LicenseFacade;
 import cz.zcu.kiv.eegdatabase.wui.core.person.PersonFacade;
+import cz.zcu.kiv.eegdatabase.wui.ui.licenses.components.ViewLicensePanel;
 
 @AuthorizeInstantiation(value = { "ROLE_READER", "ROLE_USER", "ROLE_EXPERIMENTER", "ROLE_ADMIN" })
 public class ExperimentsPackageDownloadPage extends MenuPage {
@@ -61,6 +68,9 @@ public class ExperimentsPackageDownloadPage extends MenuPage {
 
     @SpringBean
     private PersonFacade personFacade;
+
+    @SpringBean
+    private LicenseFacade licenseFacade;
 
     public ExperimentsPackageDownloadPage(PageParameters parameters) {
 
@@ -86,6 +96,7 @@ public class ExperimentsPackageDownloadPage extends MenuPage {
     private class ExperimentPackageDownloadForm extends Form<MetadataCommand> {
 
         private static final long serialVersionUID = 163130449536922222L;
+        private IModel<License> licenseModel;
 
         public ExperimentPackageDownloadForm(String id, final ExperimentPackage expPackage, final ExperimentDownloadProvider downloadProvider,
                 final ExperimentPackageFacade expPckFacade) {
@@ -185,7 +196,7 @@ public class ExperimentsPackageDownloadPage extends MenuPage {
                         command.setPhoneNumber(false);
                     }
 
-                    FileDTO outputFile = downloadProvider.generatePackageFile(expPackage, command);
+                    FileDTO outputFile = downloadProvider.generatePackageFile(expPackage, command, licenseModel.getObject());
 
                     if (outputFile == null || outputFile.getFile() == null)
                         error("Error while file is generated. Can't be downloaded.");
@@ -195,6 +206,41 @@ public class ExperimentsPackageDownloadPage extends MenuPage {
                 }
             };
             add(submit);
+            
+            final ModalWindow viewLicenseWindow = new ModalWindow("viewLicenseWindow");
+            viewLicenseWindow.setAutoSize(true);
+            viewLicenseWindow.setResizable(false);
+            viewLicenseWindow.setMinimalWidth(700);
+            viewLicenseWindow.setWidthUnit("px");
+            add(viewLicenseWindow);
+            
+            licenseModel = new Model<License>();
+            License license = licenseFacade.getLicenseForPurchasedExpPackage(expPackage.getExperimentPackageId(), EEGDataBaseSession.get().getLoggedUser().getPersonId());
+            if (license != null) {
+                licenseModel.setObject(license);
+            } else {
+                licenseModel.setObject(licenseFacade.getPublicLicense());
+            }
+            viewLicenseWindow.setContent(new ViewLicensePanel(viewLicenseWindow.getContentId(), licenseModel));
+            viewLicenseWindow.setTitle(ResourceUtils.getModel("dataTable.heading.licenseTitle"));
+            AjaxLink<License> viewLicenseLink = new AjaxLink<License>("viewLicenseLink", licenseModel) {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+                    viewLicenseWindow.show(target);
+                }
+
+                @Override
+                protected void onConfigure() {
+                    super.onConfigure();
+                    this.setVisible(licenseModel.getObject() != null);
+                }
+
+            };
+            viewLicenseLink.setOutputMarkupPlaceholderTag(true);
+            add(viewLicenseLink);
 
         }
     }
