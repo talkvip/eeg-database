@@ -8,7 +8,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 import cz.zcu.kiv.eegdatabase.data.pojo.Order;
-import cz.zcu.kiv.eegdatabase.wui.app.session.EEGDataBaseSession;
 import cz.zcu.kiv.eegdatabase.wui.core.GenericFacadeImpl;
 
 public class OrderFacadeImpl extends GenericFacadeImpl<Order, Integer> implements OrderFacade {
@@ -26,15 +25,6 @@ public class OrderFacadeImpl extends GenericFacadeImpl<Order, Integer> implement
         this.service = service;
     }
     
-    @Override
-    public Integer create(Order newInstance) {
-        
-        Integer newOrderId = super.create(newInstance);
-        // flush cache with purchased items from session
-        EEGDataBaseSession.get().reloadPurchasedItemCache();
-        return newOrderId;
-    }
-
     @Override
     public List<Order> getAllOrdersForPerson(int personId) {
         return service.getAllOrdersForPerson(personId);
@@ -64,4 +54,5 @@ public class OrderFacadeImpl extends GenericFacadeImpl<Order, Integer> implement
     public Set<Integer> getPurchasedExperimentPackageId(int personId) {
         return service.getPurchasedExperimentPackageId(personId);
     }
+
 }
