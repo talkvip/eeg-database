@@ -44,6 +44,7 @@ import cz.zcu.kiv.eegdatabase.data.pojo.ResearchGroup;
 import cz.zcu.kiv.eegdatabase.data.service.MailService;
 import cz.zcu.kiv.eegdatabase.wui.core.GenericServiceImpl;
 import cz.zcu.kiv.eegdatabase.wui.core.group.ResearchGroupFacade;
+import cz.zcu.kiv.eegdatabase.wui.core.group.ResearchGroupService;
 import cz.zcu.kiv.eegdatabase.wui.core.license.PersonalLicenseService;
 
 /**
@@ -56,7 +57,7 @@ public class PersonalLicenseServiceImpl extends GenericServiceImpl<PersonalLicen
     
 	private PersonalLicenseDao personalLicenseDao;
 	private MailService mailService;
-	private ResearchGroupFacade groupFacade;
+	private ResearchGroupService groupService;
 	
     public PersonalLicenseServiceImpl() {
     }
@@ -76,8 +77,8 @@ public class PersonalLicenseServiceImpl extends GenericServiceImpl<PersonalLicen
     }
 	
 	@Required
-	public void setGroupFacade(ResearchGroupFacade groupFacade) {
-        this.groupFacade = groupFacade;
+	public void setGroupFacade(ResearchGroupService groupService) {
+        this.groupService = groupService;
     }
 
 	@Override
@@ -100,7 +101,7 @@ public class PersonalLicenseServiceImpl extends GenericServiceImpl<PersonalLicen
 		personalLicense.setLicenseState(PersonalLicenseState.APPLICATION);
 		this.personalLicenseDao.create(personalLicense);
 		
-		ResearchGroup group = groupFacade.getResearchGroupById(personalLicense.getLicense().getResearchGroup().getResearchGroupId());
+		ResearchGroup group = groupService.getResearchGroupById(personalLicense.getLicense().getResearchGroup().getResearchGroupId());
 		
 		this.mailService.sendLicenseRequestToApplicantEmail(personalLicense.getEmail(), personalLicense.getLicense().getTitle());
 		this.mailService.sendLicenseRequestToGroupEmail(
